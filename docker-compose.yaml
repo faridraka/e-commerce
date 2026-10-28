@@ -1,0 +1,95 @@
+# Jalankan: docker compose up -d --build --pull always
+name: e-commerce
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      args:
+        UID: ${DOCKER_UID:-1000}
+        GID: ${DOCKER_GID:-1000}
+    container_name: ecommerce-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    environment:
+      DB_DATABASE: ${DB_DATABASE:-ecommerce}
+      DB_USERNAME: ${DB_USERNAME:-ecommerce}
+      DB_PASSWORD: ${DB_PASSWORD:-ecommerce123}
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [backend]
+
+  web:
+    image: nginx:stable-alpine
+    container_name: ecommerce-web
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html:ro
+      - ./docker/php/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on: [app]
+    networks: [backend]
+
+  node:
+    # Tailwind CSS + Vite (hot reload)
+    image: node:22-alpine
+    container_name: ecommerce-node
+    user: "${DOCKER_UID:-1000}:${DOCKER_GID:-1000}"
+    working_dir: /var/www/html
+    environment:
+      HOME: /tmp
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "5173:5173"
+    command: >
+      sh -c "until [ -f package.json ]; do echo 'menunggu package.json dari container app...'; sleep 3; done;
+             npm install && npm run dev -- --host 0.0.0.0"
+    depends_on: [app]
+    networks: [backend]
+
+  db:
+    image: mysql:8.4
+    container_name: ecommerce-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-ecommerce}
+      MYSQL_USER: ${DB_USERNAME:-ecommerce}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-ecommerce123}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-ecommerce123}
+    volumes:
+      - dbdata:/var/lib/mysql
+    ports:
+      - "127.0.0.1:3306:3306"   # hanya bisa diakses dari mesin sendiri
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${DB_ROOT_PASSWORD:-ganti_root_password_ini}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [backend]
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: ecommerce-pma
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_ARBITRARY: 0
+    ports:
+      - "127.0.0.1:8080:80"     # JANGAN dibuka ke publik (lihat catatan keamanan)
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [backend]
+
+volumes:
+  dbdata:
+
+networks:
+  backend:
