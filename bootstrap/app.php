@@ -15,6 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'onboarding.completed' => \App\Http\Middleware\EnsureOnboardingCompleted::class,
         ]);
+
+        // Webhook Midtrans dipanggil langsung oleh server Midtrans:
+        // tidak punya sesi Laravel, jadi harus dikecualikan dari verifikasi CSRF.
+        $middleware->validateCsrfTokens(except: ['midtrans/notification']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

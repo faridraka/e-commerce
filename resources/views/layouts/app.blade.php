@@ -46,7 +46,7 @@
             </form>
 
             <div class="flex items-center gap-2 shrink-0">
-                <a class="relative p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full flex items-center justify-center" href="#" title="Keranjang Belanja">
+                <a class="relative p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full flex items-center justify-center" href="{{ auth()->check() ? route('cart.index') : route('login') }}" title="Keranjang Belanja">
                     <span class="material-symbols-outlined text-[22px]">shopping_cart</span>
                     <span id="cart-badge" class="absolute top-1 right-1 w-4 h-4 rounded-full bg-secondary text-on-secondary text-caption font-caption items-center justify-center leading-none {{ ($cartCount ?? 0) > 0 ? 'flex' : 'hidden' }}">{{ $cartCount ?? 0 }}</span>
                 </a>
@@ -74,8 +74,14 @@
                                     {{ auth()->user()->role === 'seller' ? 'Penjual' : 'Pembeli' }}
                                 </span>
                             </div>
-                            <a class="flex items-center gap-2.5 px-4 py-2.5 font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+                            <a class="flex items-center gap-2.5 px-4 py-2.5 font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" href="{{ route('profile.show') }}">
                                 <span class="material-symbols-outlined text-[18px]">person</span> Profil Saya
+                            </a>
+                            <a class="flex items-center gap-2.5 px-4 py-2.5 font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" href="{{ route('orders.index') }}">
+                                <span class="material-symbols-outlined text-[18px]">receipt_long</span> Pesanan Saya
+                            </a>
+                            <a class="flex items-center gap-2.5 px-4 py-2.5 font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" href="{{ route('addresses.index') }}">
+                                <span class="material-symbols-outlined text-[18px]">location_on</span> Alamat Saya
                             </a>
                             @if (auth()->user()->role === 'seller')
                                 <a class="flex items-center gap-2.5 px-4 py-2.5 font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
@@ -164,7 +170,7 @@
                 <span class="material-symbols-outlined text-[20px]">category</span>
                 <span class="font-caption text-caption">Kategori</span>
             </a>
-            <a class="relative flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface gap-0.5" href="#">
+            <a class="relative flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface gap-0.5" href="{{ auth()->check() ? route('cart.index') : route('login') }}">
                 <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
                 <span class="font-caption text-caption">Keranjang</span>
             </a>
@@ -174,7 +180,7 @@
                     <span class="font-caption text-caption">Masuk</span>
                 </a>
             @else
-                <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface gap-0.5" href="#">
+                <a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface gap-0.5" href="{{ route('profile.show') }}">
                     <span class="material-symbols-outlined text-[20px]">person</span>
                     <span class="font-caption text-caption">Akun</span>
                 </a>
@@ -224,7 +230,7 @@
             const quantity = parseInt(button.dataset.qty ?? '1', 10) || 1;
 
             try {
-                const response = await fetch(`{{ url('keranjang') }}/${button.dataset.productId}`, {
+                const response = await fetch(`{{ url('cart') }}/${button.dataset.productId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
