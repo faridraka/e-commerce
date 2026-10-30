@@ -2,11 +2,18 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OnboardingController;
+use App\Http\Controllers\ProductController;
 use App\Http\Middleware\EnsureOnboardingCompleted;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('home')->middleware(EnsureOnboardingCompleted::class);
+Route::get('/', [HomeController::class, 'index'])->name('home')->middleware(EnsureOnboardingCompleted::class);
+
+// Katalog & detail produk (publik)
+Route::get('katalog', [ProductController::class, 'index'])->name('products.index');
+Route::get('produk/{product:slug}', [ProductController::class, 'show'])->name('products.show');
 
 // Halaman untuk tamu (belum login)
 Route::middleware('guest')->group(function () {
@@ -30,3 +37,14 @@ Route::middleware('auth')->group(function () {
     Route::post('onboarding/verifikasi', [OnboardingController::class, 'verify'])->name('onboarding.verification.store');
     Route::post('onboarding/verifikasi/lewati', [OnboardingController::class, 'skip'])->name('onboarding.verification.skip');
 });
+
+// Endpoint JSON publik
+Route::prefix('api')->group(function () {
+    Route::get('products', [ProductController::class, 'apiIndex'])->name('api.products.index');
+    Route::get('products/{slug}', [ProductController::class, 'apiShow'])->name('api.products.show');
+});
+
+// Keranjang (khusus user login; tamu diarahkan ke halaman daftar)
+Route::post('keranjang/{product}', [CartController::class, 'store'])
+    ->middleware('auth')
+    ->name('cart.store');

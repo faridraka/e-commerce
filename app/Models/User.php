@@ -41,6 +41,11 @@ class User extends Authenticatable
         return $this->hasOne(Store::class);
     }
 
+    public function cart(): HasOne
+    {
+        return $this->hasOne(Cart::class);
+    }
+
     /**
      * Apakah user sudah menyelesaikan seluruh langkah onboarding.
      */
