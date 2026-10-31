@@ -1,0 +1,202 @@
+- generic [active] [ref=f3e1]:
+  - complementary [ref=f3e2]:
+    - generic [ref=f3e3]:
+      - generic [ref=f3e4]:
+        - generic [ref=f3e5]:
+          - generic [ref=f3e6]: L
+          - generic [ref=f3e7]:
+            - heading "Lokalku POS" [level=1] [ref=f3e8]
+            - generic [ref=f3e9]: Merchant Suite
+        - generic [ref=f3e10]:
+          - generic [ref=f3e11]:
+            - generic "Toko Uji Akses" [ref=f3e12]
+            - generic "Online" [ref=f3e13]
+          - paragraph [ref=f3e14]: toko-uji-akses
+          - generic [ref=f3e15]:
+            - generic [ref=f3e16]: storefront
+            - generic [ref=f3e17]: Toko Aktif - Buka
+      - navigation [ref=f3e18]:
+        - link "dashboard Dasbor" [ref=f3e19] [cursor=pointer]:
+          - /url: https://lokalku.web.id/seller/dashboard
+          - generic [ref=f3e20]:
+            - generic [ref=f3e21]: dashboard
+            - generic [ref=f3e22]: Dasbor
+        - link "point_of_sale Kasir POS Cepat" [ref=f3e24] [cursor=pointer]:
+          - /url: https://lokalku.web.id/seller/pos
+          - generic [ref=f3e25]:
+            - generic [ref=f3e26]: point_of_sale
+            - generic [ref=f3e27]: Kasir POS
+          - generic [ref=f3e28]: Cepat
+        - link "inventory_2 Produk" [ref=f3e29] [cursor=pointer]:
+          - /url: https://lokalku.web.id/seller/products
+          - generic [ref=f3e30]:
+            - generic [ref=f3e31]: inventory_2
+            - generic [ref=f3e32]: Produk
+        - link "category Kategori" [ref=f3e33] [cursor=pointer]:
+          - /url: https://lokalku.web.id/seller/categories
+          - generic [ref=f3e34]:
+            - generic [ref=f3e35]: category
+            - generic [ref=f3e36]: Kategori
+        - link "inventory Stok" [ref=f3e37] [cursor=pointer]:
+          - /url: https://lokalku.web.id/seller/stock
+          - generic [ref=f3e38]:
+            - generic [ref=f3e39]: inventory
+            - generic [ref=f3e40]: Stok
+        - link "shopping_bag Pesanan Online" [ref=f3e41] [cursor=pointer]:
+          - /url: https://lokalku.web.id/seller/orders
+          - generic [ref=f3e42]:
+            - generic [ref=f3e43]: shopping_bag
+            - generic [ref=f3e44]: Pesanan Online
+        - link "receipt_long Riwayat Transaksi POS" [ref=f3e45] [cursor=pointer]:
+          - /url: https://lokalku.web.id/seller/pos/history
+          - generic [ref=f3e46]:
+            - generic [ref=f3e47]: receipt_long
+            - generic [ref=f3e48]: Riwayat Transaksi POS
+    - generic [ref=f3e49]:
+      - generic [ref=f3e50]:
+        - generic [ref=f3e51]: SU
+        - generic [ref=f3e52]:
+          - paragraph [ref=f3e53]: Seller Uji Akses
+          - paragraph [ref=f3e54]: Penjual Aktif
+      - generic [ref=f3e55]:
+        - link "bolt Buka Kasir Cepat" [ref=f3e56] [cursor=pointer]:
+          - /url: https://lokalku.web.id/seller/pos
+          - generic [ref=f3e57]: bolt
+          - generic [ref=f3e58]: Buka Kasir Cepat
+        - button "logout Keluar Sesi" [ref=f3e60] [cursor=pointer]:
+          - generic [ref=f3e61]: logout
+          - generic [ref=f3e62]: Keluar Sesi
+  - generic [ref=f3e63]:
+    - banner [ref=f3e64]:
+      - generic [ref=f3e65]:
+        - generic [ref=f3e66]:
+          - generic [ref=f3e67]: Portal Penjual
+          - generic [ref=f3e68]: chevron_right
+          - generic [ref=f3e69]: Dasbor
+        - generic [ref=f3e70]:
+          - generic [ref=f3e71]: search
+          - textbox "Cari pesanan, SKU, atau nama produk..." [ref=f3e72]
+      - generic [ref=f3e73]:
+        - generic [ref=f3e74]:
+          - generic [ref=f3e75]: verified
+          - generic [ref=f3e76]: Kasir Tunai Aktif
+        - generic [ref=f3e77]:
+          - link "add Tambah Produk" [ref=f3e78] [cursor=pointer]:
+            - /url: https://lokalku.web.id/seller/products/create
+            - generic [ref=f3e79]: add
+            - generic [ref=f3e80]: Tambah Produk
+          - link "shopping_cart_checkout Buka Kasir" [ref=f3e81] [cursor=pointer]:
+            - /url: https://lokalku.web.id/seller/pos
+            - generic [ref=f3e82]: shopping_cart_checkout
+            - generic [ref=f3e83]: Buka Kasir
+        - button "notifications" [ref=f3e85] [cursor=pointer]
+        - generic [ref=f3e88]: person
+    - main [ref=f3e91]:
+      - generic [ref=f3e92]:
+        - generic [ref=f3e93]:
+          - generic [ref=f3e94]:
+            - heading "Dashboard" [level=1] [ref=f3e95]
+            - paragraph [ref=f3e96]: Ikhtisar performa penjualan online dan kasir POS toko Anda.
+          - generic [ref=f3e97]:
+            - generic [ref=f3e98]:
+              - link "Hari Ini" [ref=f3e99] [cursor=pointer]:
+                - /url: https://lokalku.web.id/seller/dashboard?period=today
+              - link "7 Hari Terakhir" [ref=f3e100] [cursor=pointer]:
+                - /url: https://lokalku.web.id/seller/dashboard?period=7d
+              - generic [ref=f3e101]:
+                - generic [ref=f3e102]: calendar_view_month
+                - text: 30 Hari Terakhir
+              - link "Bulan Ini" [ref=f3e103] [cursor=pointer]:
+                - /url: https://lokalku.web.id/seller/dashboard?period=month
+            - link "add + Transaksi POS Baru" [ref=f3e104] [cursor=pointer]:
+              - /url: https://lokalku.web.id/seller/pos
+              - generic [ref=f3e105]: add
+              - generic [ref=f3e106]: + Transaksi POS Baru
+        - generic [ref=f3e107]:
+          - generic [ref=f3e108]:
+            - generic [ref=f3e109]:
+              - generic [ref=f3e110]: Total Penjualan
+              - generic [ref=f3e111]: payments
+            - generic [ref=f3e113]: Rp 0
+            - generic [ref=f3e114]: 30 Hari Terakhir
+            - generic [ref=f3e115]: Pos pembayaran lunas
+            - link "Riwayat Transaksi arrow_forward" [ref=f3e118] [cursor=pointer]:
+              - /url: https://lokalku.web.id/seller/pos/history
+              - generic [ref=f3e119]: Riwayat Transaksi
+              - generic [ref=f3e120]: arrow_forward
+          - generic [ref=f3e121]:
+            - generic [ref=f3e122]:
+              - generic [ref=f3e123]: Jumlah Pesanan
+              - generic [ref=f3e124]: shopping_bag
+            - generic [ref=f3e126]: "0"
+            - generic [ref=f3e127]: 30 Hari Terakhir
+            - link "Buka Pesanan arrow_forward" [ref=f3e129] [cursor=pointer]:
+              - /url: https://lokalku.web.id/seller/orders
+              - generic [ref=f3e130]: Buka Pesanan
+              - generic [ref=f3e131]: arrow_forward
+          - generic [ref=f3e132]:
+            - generic [ref=f3e133]:
+              - generic [ref=f3e134]: Produk Aktif
+              - generic [ref=f3e135]: inventory_2
+            - generic [ref=f3e137]: "0"
+            - paragraph [ref=f3e138]: Semua produk sinkron di etalase & POS
+            - link "Lihat Katalog arrow_forward" [ref=f3e140] [cursor=pointer]:
+              - /url: https://lokalku.web.id/seller/products
+              - generic [ref=f3e141]: Lihat Katalog
+              - generic [ref=f3e142]: arrow_forward
+          - generic [ref=f3e143]:
+            - generic [ref=f3e144]:
+              - generic [ref=f3e145]: Perlu Diproses
+              - generic [ref=f3e146]: pending_actions
+            - generic [ref=f3e148]: "0"
+            - paragraph [ref=f3e150]: 0 Perlu Dikemas • 0 Siap Dikirim
+            - link "Buka Pesanan arrow_forward" [ref=f3e152] [cursor=pointer]:
+              - /url: https://lokalku.web.id/seller/orders
+              - generic [ref=f3e153]: Buka Pesanan
+              - generic [ref=f3e154]: arrow_forward
+        - generic [ref=f3e155]:
+          - generic [ref=f3e156]:
+            - generic [ref=f3e157]:
+              - generic [ref=f3e159]:
+                - heading "Pesanan Terbaru" [level=2] [ref=f3e160]
+                - text: 5 pesanan terakhir dari etalase online dan kasir POS
+              - table [ref=f3e162]:
+                - rowgroup [ref=f3e163]:
+                  - row [ref=f3e164]:
+                    - columnheader "Kode Pesanan" [ref=f3e165]
+                    - columnheader "Pelanggan" [ref=f3e166]
+                    - columnheader "Saluran" [ref=f3e167]
+                    - columnheader "Total" [ref=f3e168]
+                    - columnheader "Status" [ref=f3e169]
+                    - columnheader "Aksi" [ref=f3e170]
+                - rowgroup [ref=f3e171]:
+                  - row [ref=f3e172]:
+                    - cell "Belum ada pesanan masuk." [ref=f3e173]
+            - link "Lihat Semua Pesanan arrow_forward" [ref=f3e175] [cursor=pointer]:
+              - /url: https://lokalku.web.id/seller/orders
+              - generic [ref=f3e176]: Lihat Semua Pesanan
+              - generic [ref=f3e177]: arrow_forward
+          - generic [ref=f3e178]:
+            - generic [ref=f3e179]:
+              - generic [ref=f3e180]:
+                - generic [ref=f3e181]:
+                  - heading "Produk Terlaris" [level=2] [ref=f3e182]
+                  - text: Berdasarkan volume unit terjual
+                - generic [ref=f3e183]: "0"
+              - paragraph [ref=f3e186]: Belum ada penjualan produk. Angka terlaris muncul setelah ada transaksi.
+            - generic [ref=f3e187]:
+              - generic [ref=f3e188]:
+                - generic [ref=f3e189]:
+                  - generic [ref=f3e190]: warning
+                  - heading "Peringatan Stok" [level=2] [ref=f3e191]
+                - link "Kelola Stok →" [ref=f3e192] [cursor=pointer]:
+                  - /url: https://lokalku.web.id/seller/stock
+              - paragraph [ref=f3e193]: Terdeteksi 0 produk berada di bawah batas minimum (5 unit).
+              - generic [ref=f3e195]:
+                - generic [ref=f3e196]: check_circle
+                - paragraph [ref=f3e197]: Semua stok produk aman di atas batas minimum.
+              - generic [ref=f3e198]:
+                - generic [ref=f3e199]: sync_alt
+                - paragraph [ref=f3e200]:
+                  - strong [ref=f3e201]: "Sinkronisasi Otomatis Stok:"
+                  - text: Setiap transaksi kasir POS langsung mengurangi ketersediaan etalase online secara realtime tanpa perlu update manual.

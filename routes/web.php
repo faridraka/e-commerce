@@ -150,21 +150,21 @@ Route::get('pesanan/{order:order_code}', fn (App\Models\Order $order) => redirec
 Route::get('pesanan/{order:order_code}/bayar', fn (App\Models\Order $order) => redirect()->to("orders/{$order->order_code}/payment", 301));
 
 // Redirect URL lama area penjual (bahasa Indonesia) ke URL baru (bahasa Inggris).
-// GET memakai 301 permanen; method lain memakai 307 agar body form tetap terkirim.
-Route::redirect('seller/dasbor', 'seller/dashboard', 301);
-Route::redirect('seller/kategori', 'seller/categories', 301);
-Route::redirect('seller/produk', 'seller/products', 301);
-Route::redirect('seller/stok', 'seller/stock', 301);
-Route::redirect('seller/pesanan', 'seller/orders', 301);
-Route::redirect('seller/pos/riwayat', 'seller/pos/history', 301);
-Route::post('seller/kategori', fn () => redirect()->to('seller/categories', 307));
-Route::get('seller/produk/tambah', fn () => redirect()->to('seller/products/create', 301));
-Route::post('seller/produk', fn () => redirect()->to('seller/products', 307));
-Route::get('seller/produk/{slug}/ubah', fn (string $slug) => redirect()->to("seller/products/{$slug}/edit", 301));
-Route::put('seller/produk/{slug}', fn (string $slug) => redirect()->to("seller/products/{$slug}", 307));
-Route::patch('seller/produk/{slug}/toggle', fn (string $slug) => redirect()->to("seller/products/{$slug}/toggle", 307));
-Route::delete('seller/produk/{slug}', fn (string $slug) => redirect()->to("seller/products/{$slug}", 307));
-Route::post('seller/stok', fn () => redirect()->to('seller/stock', 307));
-Route::get('seller/pesanan/{orderCode}', fn (string $orderCode) => redirect()->to("seller/orders/{$orderCode}", 301));
-Route::post('seller/pesanan/{orderCode}/status', fn (string $orderCode) => redirect()->to("seller/orders/{$orderCode}/status", 307));
-Route::get('seller/pos/{orderCode}/struk', fn (string $orderCode) => redirect()->to("seller/pos/{$orderCode}/receipt", 301));
+// Tujuan memakai leading slash agar mutlak, bukan relatif terhadap path saat ini.
+Route::redirect('seller/dasbor', '/seller/dashboard', 301);
+Route::redirect('seller/kategori', '/seller/categories', 301);
+Route::redirect('seller/produk', '/seller/products', 301);
+Route::redirect('seller/stok', '/seller/stock', 301);
+Route::redirect('seller/pesanan', '/seller/orders', 301);
+Route::redirect('seller/pos/riwayat', '/seller/pos/history', 301);
+Route::post('seller/kategori', fn () => redirect()->to('/seller/categories', 307));
+Route::get('seller/produk/tambah', fn () => redirect()->to('/seller/products/create', 301));
+Route::post('seller/produk', fn () => redirect()->to('/seller/products', 307));
+Route::get('seller/produk/{slug}/ubah', fn (string $slug) => redirect()->to("/seller/products/{$slug}/edit", 301));
+Route::put('seller/produk/{slug}', fn (string $slug) => redirect()->to("/seller/products/{$slug}", 307));
+Route::patch('seller/produk/{slug}/toggle', fn (string $slug) => redirect()->to("/seller/products/{$slug}/toggle", 307));
+Route::delete('seller/produk/{slug}', fn (string $slug) => redirect()->to("/seller/products/{$slug}", 307));
+Route::post('seller/stok', fn () => redirect()->to('/seller/stock', 307));
+Route::get('seller/pesanan/{orderCode}', fn (string $orderCode) => redirect()->to("/seller/orders/{$orderCode}", 301));
+Route::post('seller/pesanan/{orderCode}/status', fn (string $orderCode) => redirect()->to("/seller/orders/{$orderCode}/status", 307));
+Route::get('seller/pos/{orderCode}/struk', fn (string $orderCode) => redirect()->to("/seller/pos/{$orderCode}/receipt", 301));

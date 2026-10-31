@@ -1,0 +1,96 @@
+- generic [active] [ref=f2e1]:
+  - banner [ref=f2e2]:
+    - generic [ref=f2e3]:
+      - generic [ref=f2e4]:
+        - link "Lokalku" [ref=f2e5] [cursor=pointer]:
+          - /url: https://lokalku.web.id
+        - navigation [ref=f2e7]:
+          - link "Fashion" [ref=f2e8] [cursor=pointer]:
+            - /url: https://lokalku.web.id/products?kategori=fashion
+          - link "Kerajinan" [ref=f2e9] [cursor=pointer]:
+            - /url: https://lokalku.web.id/products?kategori=kerajinan
+          - link "Makanan" [ref=f2e10] [cursor=pointer]:
+            - /url: https://lokalku.web.id/products?kategori=makanan
+          - link "Minuman" [ref=f2e11] [cursor=pointer]:
+            - /url: https://lokalku.web.id/products?kategori=minuman
+          - link "Perawatan" [ref=f2e12] [cursor=pointer]:
+            - /url: https://lokalku.web.id/products?kategori=perawatan
+      - generic [ref=f2e14]:
+        - combobox [ref=f2e15] [cursor=pointer]:
+          - option "Semua Kategori" [selected]
+          - option "Fashion"
+          - option "Kerajinan"
+          - option "Makanan"
+          - option "Minuman"
+          - option "Perawatan"
+        - textbox "Cari produk UMKM lokal..." [ref=f2e16]
+        - button "search" [ref=f2e17] [cursor=pointer]
+      - generic [ref=f2e19]:
+        - link "shopping_cart" [ref=f2e20] [cursor=pointer]:
+          - /url: https://lokalku.web.id/login
+        - link "Masuk" [ref=f2e23] [cursor=pointer]:
+          - /url: https://lokalku.web.id/login
+        - link "Daftar" [ref=f2e24] [cursor=pointer]:
+          - /url: https://lokalku.web.id/register
+  - main [ref=f2e25]:
+    - main [ref=f2e26]:
+      - generic "Halaman Tidak Ditemukan" [ref=f2e29]:
+        - generic [ref=f2e30]: search_off
+        - heading "Halaman Tidak Ditemukan" [level=3] [ref=f2e32]
+        - paragraph [ref=f2e33]: Halaman atau data yang Anda cari tidak tersedia. Mungkin sudah dipindahkan, dihapus, atau alamatnya salah ketik.
+        - link "Kembali ke Beranda" [ref=f2e35] [cursor=pointer]:
+          - /url: https://lokalku.web.id
+  - contentinfo [ref=f2e36]:
+    - generic [ref=f2e37]:
+      - generic [ref=f2e38]:
+        - generic [ref=f2e39]:
+          - generic [ref=f2e40]: Lokalku
+          - paragraph [ref=f2e42]: Platform pasar digital & ekosistem POS pintar pendukung kemandirian UMKM Indonesia.
+          - generic [ref=f2e43]:
+            - generic [ref=f2e44]: verified
+            - text: Terintegrasi Sistem Pembayaran Nasional
+        - generic [ref=f2e45]:
+          - heading "Toko & Layanan" [level=3] [ref=f2e46]
+          - paragraph [ref=f2e47]: Lokalku Sentra UMKM Nusantara
+          - paragraph [ref=f2e48]:
+            - generic [ref=f2e49]: location_on
+            - text: Jl. Kebon Sirih No. 42, Gambir, Jakarta Pusat, 10110
+          - paragraph [ref=f2e50]:
+            - generic [ref=f2e51]: schedule
+            - text: "Buka Setiap Hari: 08:00 - 22:00 WIB"
+        - generic [ref=f2e52]:
+          - heading "Tentang & Informasi" [level=3] [ref=f2e53]
+          - list [ref=f2e54]:
+            - listitem [ref=f2e55]:
+              - link "Tentang Lokalku" [ref=f2e56] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f2e57]:
+              - link "Gabung Mitra UMKM" [ref=f2e58] [cursor=pointer]:
+                - /url: https://lokalku.web.id/register
+            - listitem [ref=f2e59]:
+              - link "Kebijakan Privasi" [ref=f2e60] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f2e61]:
+              - link "Syarat & Ketentuan" [ref=f2e62] [cursor=pointer]:
+                - /url: "#"
+        - generic [ref=f2e63]:
+          - heading "Bantuan & Hubungi" [level=3] [ref=f2e64]
+          - list [ref=f2e65]:
+            - listitem [ref=f2e66]:
+              - link "Pusat Bantuan (FAQ)" [ref=f2e67] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f2e68]:
+              - link "Panduan Kasir POS" [ref=f2e69] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f2e70]:
+              - link "Layanan Pelanggan WhatsApp" [ref=f2e71] [cursor=pointer]:
+                - /url: "#"
+      - generic [ref=f2e72]:
+        - paragraph [ref=f2e73]: © 2024 Lokalku. Hak Cipta Dilindungi Undang-Undang.
+        - paragraph [ref=f2e74]:
+          - generic [ref=f2e75]: shield
+          - text: Transaksi Aman & Terenkripsi
+  - generic:
+    - generic:
+      - generic: check_circle
+      - generic: Produk ditambahkan ke keranjang!
