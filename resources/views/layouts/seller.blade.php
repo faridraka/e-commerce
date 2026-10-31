@@ -25,9 +25,6 @@
         ['label' => 'Stok', 'icon' => 'inventory', 'route' => 'seller.stock', 'active' => 'seller.stock*', 'badge' => null],
         ['label' => 'Pesanan Online', 'icon' => 'shopping_bag', 'route' => 'seller.orders', 'active' => 'seller.orders*', 'badge' => null],
         ['label' => 'Riwayat Transaksi POS', 'icon' => 'receipt_long', 'route' => 'seller.pos.history', 'active' => 'seller.pos.history*', 'badge' => null],
-        ['label' => 'Laporan Keuangan', 'icon' => 'monitoring', 'route' => null, 'active' => null, 'badge' => null],
-        ['label' => 'Pengaturan Toko', 'icon' => 'settings', 'route' => null, 'active' => null, 'badge' => null],
-        ['label' => 'Kembali ke Etalase', 'icon' => 'storefront', 'route' => 'home', 'active' => null, 'badge' => null],
     ];
 @endphp
 <aside class="fixed left-0 top-0 h-full w-[240px] bg-surface-card border-r border-border-default z-50 flex flex-col justify-between select-none">

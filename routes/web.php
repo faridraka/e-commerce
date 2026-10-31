@@ -92,36 +92,36 @@ use App\Http\Controllers\Seller\ProductController as SellerProductController;
 use App\Http\Controllers\Seller\StockController as SellerStockController;
 
 Route::prefix('seller')->middleware(['auth', 'onboarding.completed', 'seller'])->group(function () {
-    Route::get('dasbor', DashboardController::class)->name('seller.dashboard');
+    Route::get('dashboard', DashboardController::class)->name('seller.dashboard');
 
-    // Kategori
-    Route::get('kategori', [SellerCategoryController::class, 'index'])->name('seller.categories');
-    Route::post('kategori', [SellerCategoryController::class, 'store'])->name('seller.categories.store');
-    Route::patch('kategori/{category}', [SellerCategoryController::class, 'update'])->name('seller.categories.update');
-    Route::delete('kategori/{category}', [SellerCategoryController::class, 'destroy'])->name('seller.categories.destroy');
+    // Categories
+    Route::get('categories', [SellerCategoryController::class, 'index'])->name('seller.categories');
+    Route::post('categories', [SellerCategoryController::class, 'store'])->name('seller.categories.store');
+    Route::patch('categories/{category}', [SellerCategoryController::class, 'update'])->name('seller.categories.update');
+    Route::delete('categories/{category}', [SellerCategoryController::class, 'destroy'])->name('seller.categories.destroy');
 
-    // Produk
-    Route::get('produk', [SellerProductController::class, 'index'])->name('seller.products');
-    Route::get('produk/tambah', [SellerProductController::class, 'create'])->name('seller.products.create');
-    Route::post('produk', [SellerProductController::class, 'store'])->name('seller.products.store');
-    Route::get('produk/{product}/ubah', [SellerProductController::class, 'edit'])->name('seller.products.edit');
-    Route::put('produk/{product}', [SellerProductController::class, 'update'])->name('seller.products.update');
-    Route::patch('produk/{product}/toggle', [SellerProductController::class, 'toggle'])->name('seller.products.toggle');
+    // Products
+    Route::get('products', [SellerProductController::class, 'index'])->name('seller.products');
+    Route::get('products/create', [SellerProductController::class, 'create'])->name('seller.products.create');
+    Route::post('products', [SellerProductController::class, 'store'])->name('seller.products.store');
+    Route::get('products/{product}/edit', [SellerProductController::class, 'edit'])->name('seller.products.edit');
+    Route::put('products/{product}', [SellerProductController::class, 'update'])->name('seller.products.update');
+    Route::patch('products/{product}/toggle', [SellerProductController::class, 'toggle'])->name('seller.products.toggle');
 
-    // Stok
-    Route::get('stok', [SellerStockController::class, 'index'])->name('seller.stock');
-    Route::post('stok', [SellerStockController::class, 'adjust'])->name('seller.stock.adjust');
+    // Stock
+    Route::get('stock', [SellerStockController::class, 'index'])->name('seller.stock');
+    Route::post('stock', [SellerStockController::class, 'adjust'])->name('seller.stock.adjust');
 
-    // Pesanan online
-    Route::get('pesanan', [SellerOrderController::class, 'index'])->name('seller.orders');
-    Route::get('pesanan/{order:order_code}', [SellerOrderController::class, 'show'])->name('seller.orders.show');
-    Route::post('pesanan/{order:order_code}/status', [SellerOrderController::class, 'updateStatus'])->name('seller.orders.status');
+    // Online orders
+    Route::get('orders', [SellerOrderController::class, 'index'])->name('seller.orders');
+    Route::get('orders/{order:order_code}', [SellerOrderController::class, 'show'])->name('seller.orders.show');
+    Route::post('orders/{order:order_code}/status', [SellerOrderController::class, 'updateStatus'])->name('seller.orders.status');
 
-    // Kasir POS
+    // POS terminal
     Route::get('pos', [PosController::class, 'terminal'])->name('seller.pos');
     Route::post('pos/checkout', [PosController::class, 'checkout'])->name('seller.pos.checkout');
-    Route::get('pos/riwayat', [PosController::class, 'history'])->name('seller.pos.history');
-    Route::get('pos/{order:order_code}/struk', [PosController::class, 'receipt'])->name('seller.pos.receipt');
+    Route::get('pos/history', [PosController::class, 'history'])->name('seller.pos.history');
+    Route::get('pos/{order:order_code}/receipt', [PosController::class, 'receipt'])->name('seller.pos.receipt');
 });
 
 // Endpoint JSON publik
@@ -148,3 +148,23 @@ Route::redirect('onboarding/verifikasi', 'onboarding/verification', 301);
 Route::get('pesanan', fn () => redirect()->to('orders', 301));
 Route::get('pesanan/{order:order_code}', fn (App\Models\Order $order) => redirect()->to("orders/{$order->order_code}", 301));
 Route::get('pesanan/{order:order_code}/bayar', fn (App\Models\Order $order) => redirect()->to("orders/{$order->order_code}/payment", 301));
+
+// Redirect URL lama area penjual (bahasa Indonesia) ke URL baru (bahasa Inggris).
+// GET memakai 301 permanen; method lain memakai 307 agar body form tetap terkirim.
+Route::redirect('seller/dasbor', 'seller/dashboard', 301);
+Route::redirect('seller/kategori', 'seller/categories', 301);
+Route::redirect('seller/produk', 'seller/products', 301);
+Route::redirect('seller/stok', 'seller/stock', 301);
+Route::redirect('seller/pesanan', 'seller/orders', 301);
+Route::redirect('seller/pos/riwayat', 'seller/pos/history', 301);
+Route::post('seller/kategori', fn () => redirect()->to('seller/categories', 307));
+Route::get('seller/produk/tambah', fn () => redirect()->to('seller/products/create', 301));
+Route::post('seller/produk', fn () => redirect()->to('seller/products', 307));
+Route::get('seller/produk/{slug}/ubah', fn (string $slug) => redirect()->to("seller/products/{$slug}/edit", 301));
+Route::put('seller/produk/{slug}', fn (string $slug) => redirect()->to("seller/products/{$slug}", 307));
+Route::patch('seller/produk/{slug}/toggle', fn (string $slug) => redirect()->to("seller/products/{$slug}/toggle", 307));
+Route::delete('seller/produk/{slug}', fn (string $slug) => redirect()->to("seller/products/{$slug}", 307));
+Route::post('seller/stok', fn () => redirect()->to('seller/stock', 307));
+Route::get('seller/pesanan/{orderCode}', fn (string $orderCode) => redirect()->to("seller/orders/{$orderCode}", 301));
+Route::post('seller/pesanan/{orderCode}/status', fn (string $orderCode) => redirect()->to("seller/orders/{$orderCode}/status", 307));
+Route::get('seller/pos/{orderCode}/struk', fn (string $orderCode) => redirect()->to("seller/pos/{$orderCode}/receipt", 301));
