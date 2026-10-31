@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class OnboardingController extends Controller
@@ -45,11 +46,58 @@ class OnboardingController extends Controller
     }
 
     /**
-     * Menampilkan halaman verifikasi penjual (kode aktivasi toko).
+     * Halaman pendaftaran toko: isi nama toko, sistem menerbitkan kode aktivasi.
      */
-    public function showVerification(): View
+    public function showVerification(): RedirectResponse|View
     {
-        return view('onboarding.verification');
+        $store = auth()->user()->store;
+
+        // Sudah punya toko pending/menunggu verifikasi: tampilkan halaman kode.
+        if ($store) {
+            return view('onboarding.verification', ['store' => $store]);
+        }
+
+        return view('onboarding.register-store');
+    }
+
+    /**
+     * Daftarkan toko baru untuk user ini, terbitkan kode aktivasi unik.
+     */
+    public function registerStore(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'min:3', 'max:100'],
+        ], [
+            'name.required' => 'Nama toko wajib diisi.',
+            'name.min' => 'Nama toko minimal 3 karakter.',
+        ]);
+
+        $user = $request->user();
+
+        if ($user->store) {
+            return redirect()->route('onboarding.verification');
+        }
+
+        do {
+            $code = 'LKL-' . random_int(1000, 9999) . '-' . random_int(1000, 9999);
+        } while (Store::where('activation_code', $code)->exists());
+
+        $slugBase = Str::slug($validated['name']) ?: 'toko';
+        $slug = $slugBase;
+        $counter = 2;
+        while (Store::where('slug', $slug)->exists()) {
+            $slug = $slugBase . '-' . $counter++;
+        }
+
+        Store::create([
+            'user_id' => $user->id,
+            'name' => trim($validated['name']),
+            'slug' => $slug,
+            'activation_code' => $code,
+        ]);
+
+        return redirect()->route('onboarding.verification')
+            ->with('status', "Toko {$validated['name']} didaftarkan. Masukkan kode aktivasi {$code} untuk membuka Dasbor Penjual.");
     }
 
     /**
@@ -73,17 +121,11 @@ class OnboardingController extends Controller
             'activation_code.regex' => 'Kode tidak valid. Coba lagi atau periksa kembali format kode aktivasi toko Anda.',
         ]);
 
-        $store = Store::where('activation_code', strtoupper($validated['activation_code']))->first();
+        $store = $request->user()->store;
 
-        if (! $store) {
+        if (! $store || $store->activation_code !== strtoupper($validated['activation_code'])) {
             return back()->withErrors([
                 'activation_code' => 'Kode tidak valid. Coba lagi atau periksa kembali format kode aktivasi toko Anda.',
-            ])->onlyInput('activation_code');
-        }
-
-        if ($store->user_id && $store->user_id !== $request->user()->id) {
-            return back()->withErrors([
-                'activation_code' => 'Kode aktivasi ini sudah digunakan toko lain. Hubungi CS Lokalku jika Anda merasa ini keliru.',
             ])->onlyInput('activation_code');
         }
 

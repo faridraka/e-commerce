@@ -75,7 +75,7 @@ class OnboardingFlowTest extends TestCase
         $this->assertNotNull($user->fresh()->onboarding_completed_at);
     }
 
-    public function test_seller_is_redirected_to_verification_page(): void
+    public function test_seller_is_redirected_to_store_registration(): void
     {
         $user = User::factory()->create();
 
@@ -89,25 +89,52 @@ class OnboardingFlowTest extends TestCase
         $this->actingAs($user)
             ->get(route('onboarding.verification'))
             ->assertOk()
-            ->assertSee('Verifikasi Akun Penjual');
+            ->assertSee('Daftarkan Toko Anda');
     }
 
-    public function test_seller_verification_rejects_invalid_code(): void
+    public function test_seller_registers_store_and_receives_activation_code(): void
     {
         $user = User::factory()->create(['role' => 'seller']);
-        Store::factory()->create(['activation_code' => 'LKL-7294-9102']);
 
         $this->actingAs($user)
-            ->post(route('onboarding.verification.store'), ['activation_code' => 'LKL-0000-FAIL'])
+            ->post(route('onboarding.store'), ['name' => 'Kopi Gayo Aceh'])
+            ->assertRedirect(route('onboarding.verification'));
+
+        $store = $user->fresh()->store;
+        $this->assertNotNull($store);
+        $this->assertSame('Kopi Gayo Aceh', $store->name);
+        $this->assertMatchesRegularExpression('/^LKL-\d{4}-\d{4}$/', $store->activation_code);
+        $this->assertNull($store->verified_at);
+        $this->assertNull($user->fresh()->onboarding_completed_at);
+
+        $this->actingAs($user)
+            ->get(route('onboarding.verification'))
+            ->assertOk()
+            ->assertSee($store->name);
+    }
+
+    public function test_seller_verification_rejects_wrong_code(): void
+    {
+        $user = User::factory()->create(['role' => 'seller']);
+        Store::factory()->create([
+            'user_id' => $user->id,
+            'activation_code' => 'LKL-7294-9102',
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('onboarding.verification.store'), ['activation_code' => 'LKL-0000-0000'])
             ->assertSessionHasErrors('activation_code');
 
         $this->assertNull($user->fresh()->onboarding_completed_at);
     }
 
-    public function test_seller_can_verify_with_valid_activation_code(): void
+    public function test_seller_can_verify_with_own_activation_code(): void
     {
         $user = User::factory()->create(['role' => 'seller']);
-        $store = Store::factory()->create(['activation_code' => 'LKL-7294-9102']);
+        $store = Store::factory()->create([
+            'user_id' => $user->id,
+            'activation_code' => 'LKL-7294-9102',
+        ]);
 
         $this->actingAs($user)
             ->post(route('onboarding.verification.store'), ['activation_code' => 'lkl-7294-9102'])

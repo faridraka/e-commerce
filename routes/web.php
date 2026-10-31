@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::post('onboarding', [OnboardingController::class, 'storeRole'])->name('onboarding.role.store');
 
     Route::get('onboarding/verification', [OnboardingController::class, 'showVerification'])->name('onboarding.verification');
+    Route::post('onboarding/store', [OnboardingController::class, 'registerStore'])->name('onboarding.store');
     Route::post('onboarding/verification', [OnboardingController::class, 'verify'])->name('onboarding.verification.store');
     Route::post('onboarding/verification/skip', [OnboardingController::class, 'skip'])->name('onboarding.verification.skip');
 });

@@ -117,7 +117,7 @@
                             </p>
                             <div class="flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-surface-container-low mb-space-lg">
                                 <span class="material-symbols-outlined text-accent-yellow text-[16px]">lock</span>
-                                <span class="font-caption text-caption text-ink-muted">Perlu kode aktivasi toko fisik/surat izin</span>
+                                <span class="font-caption text-caption text-ink-muted">Daftarkan toko lalu verifikasi kode otomatis</span>
                             </div>
                             <div class="space-y-space-sm">
                                 <div class="flex items-start gap-space-sm">
@@ -135,7 +135,7 @@
                             </div>
                         </div>
                         <div class="mt-space-xl pt-space-md flex items-center justify-between text-ink-muted font-caption text-caption font-medium transition-colors" id="seller-code-prompt">
-                            <span>Siapkan kode toko saat langkah berikutnya</span>
+                            <span>Isi nama toko di langkah berikutnya</span>
                             <span class="material-symbols-outlined text-[16px]">info</span>
                         </div>
                     </div>

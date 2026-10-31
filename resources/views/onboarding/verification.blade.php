@@ -41,18 +41,27 @@
                     <span class="material-symbols-outlined text-[28px]" id="badge-icon-symbol" style="font-variation-settings: 'FILL' 1;">@error('activation_code') gpp_bad @else verified_user @enderror</span>
                 </div>
                 <div class="flex flex-col gap-space-xs mt-1">
-                    <h2 class="font-headline-md text-headline-md text-on-surface font-bold" id="card-headline">Verifikasi Akun Penjual</h2>
+                    <h2 class="font-headline-md text-headline-md text-on-surface font-bold" id="card-headline">Verifikasi Toko {{ $store->name ?? '' }}</h2>
                     <p class="font-body-md text-body-md text-ink-muted max-w-[380px] leading-relaxed">
-                        Masukkan kode aktivasi toko yang diberikan pemilik toko atau administrator untuk membuka modul kasir POS dan inventaris.
+                        Sistem menerbitkan kode aktivasi unik untuk toko Anda. Masukkan kode tersebut untuk membuka Dasbor Penjual.
                     </p>
                 </div>
             </div>
+
+            @if (session('status'))
+                <div class="bg-tertiary-fixed/20 border border-tertiary/30 rounded-lg p-space-md flex gap-space-sm items-start">
+                    <span class="material-symbols-outlined text-tertiary text-[20px] shrink-0 mt-0.5">key</span>
+                    <p class="font-body-md text-body-md text-on-surface text-[13px] leading-snug">
+                        {{ session('status') }}
+                    </p>
+                </div>
+            @endif
 
             <!-- Informative Context Note -->
             <div class="bg-surface-container-low rounded-lg p-space-md flex gap-space-sm items-start transition-all" id="hint-box">
                 <span class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5">info</span>
                 <p class="font-body-md text-body-md text-on-surface-variant text-[13px] leading-snug">
-                    Format kode aktivasi berformat 12 digit (<span class="font-code-mono font-medium text-on-surface">LKL-8821-4902</span>) yang tercantum pada surat kemitraan atau mesin POS fisik Lokalku.
+                    Format kode aktivasi berformat 12 digit (<span class="font-code-mono font-medium text-on-surface">LKL-8821-4902</span>) yang diterbitkan otomatis saat Anda mendaftarkan toko di langkah sebelumnya.
                 </p>
             </div>
 
@@ -119,8 +128,8 @@
                     <span class="material-symbols-outlined text-[15px] text-tertiary">shield</span>
                     <span>Enkripsi Verifikasi 256-bit • Kemitraan UMKM Terdaftar</span>
                 </div>
-                <a class="font-caption text-caption text-primary hover:text-blue-hover font-medium underline underline-offset-2 transition-colors" href="#">
-                    Belum punya kode aktivasi? Hubungi Pemilik Toko / CS Lokalku
+                <a class="font-caption text-caption text-primary hover:text-blue-hover font-medium underline underline-offset-2 transition-colors" href="{{ route('onboarding.verification') }}">
+                    Kode hilang? Muat ulang halaman ini untuk melihat ulang kode toko Anda
                 </a>
             </div>
         </div>

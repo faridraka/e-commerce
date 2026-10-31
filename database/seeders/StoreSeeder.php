@@ -12,7 +12,8 @@ class StoreSeeder extends Seeder
     use WithoutModelEvents;
 
     /**
-     * Toko demo siap klaim melalui kode aktivasi.
+     * Toko demo untuk katalog/produk contoh. Di production, penjual
+     * mendaftarkan tokonya sendiri lewat onboarding (tanpa seeder).
      */
     public function run(): void
     {
