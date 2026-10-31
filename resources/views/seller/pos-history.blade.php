@@ -16,12 +16,8 @@
     $growth = $salesYesterday > 0 ? round(($salesToday - $salesYesterday) / $salesYesterday * 100, 1) : null;
 
     $cashPaidRows = $paidRows->filter(fn ($o) => $payOf($o)?->method === 'manual');
-    $virtualPaidRows = $paidRows->filter(fn ($o) => $payOf($o)?->method === 'virtual');
     $cashAmount = (float) $cashPaidRows->sum('total_amount');
-    $virtualAmount = (float) $virtualPaidRows->sum('total_amount');
-    $paidAmount = $cashAmount + $virtualAmount;
-    $cashPct = $paidAmount > 0 ? (int) round($cashAmount / $paidAmount * 100) : 0;
-    $virtualPct = $paidAmount > 0 ? 100 - $cashPct : 0;
+    $paidAmount = $cashAmount;
 
     $dateLabel = now()->translatedFormat('d M Y') . ' - ' . now()->translatedFormat('d M Y');
 @endphp
@@ -113,9 +109,7 @@
                     <div class="flex flex-col">
                         <span class="font-caption text-caption text-ink-muted">METODE PEMBAYARAN</span>
                         <div class="flex items-center gap-space-sm mt-1">
-                            <span class="font-body-md text-body-md font-bold text-primary">{{ $virtualPct }}% QRIS</span>
-                            <span class="text-ink-muted text-[12px]">•</span>
-                            <span class="font-body-md text-body-md font-bold text-on-surface">{{ $cashPct }}% Tunai</span>
+                            <span class="font-body-md text-body-md font-bold text-on-surface">Tunai</span>
                         </div>
                     </div>
                     <div class="w-11 h-11 rounded-full bg-surface-container-low text-tertiary flex items-center justify-center shrink-0">
@@ -123,14 +117,9 @@
                     </div>
                 </div>
                 <div class="mt-space-md pt-space-xs flex flex-col gap-1">
-                    <!-- Split Bar Visual -->
-                    <div class="w-full h-2 rounded-full bg-surface-container overflow-hidden flex">
-                        <div class="h-full bg-primary-container" style="width: {{ $virtualPct }}%"></div>
-                        <div class="h-full bg-surface-dim" style="width: {{ $cashPct }}%"></div>
-                    </div>
-                    <div class="flex items-center justify-between font-caption text-caption text-ink-muted pt-0.5">
-                        <span class="font-code-mono text-on-surface">Rp {{ number_format($virtualAmount, 0, ',', '.') }} QRIS</span>
-                        <span class="font-code-mono text-on-surface">Rp {{ number_format($cashAmount, 0, ',', '.') }} Tunai</span>
+                    <div class="flex items-center justify-between font-caption text-caption text-ink-muted">
+                        <span class="font-code-mono text-on-surface">Total Penjualan Lunas</span>
+                        <span class="font-code-mono text-on-surface">Rp {{ number_format($cashAmount, 0, ',', '.') }}</span>
                     </div>
                 </div>
             </div>
@@ -240,12 +229,7 @@
                                         <span class="font-medium {{ $isVoid ? 'text-ink-muted' : 'text-on-surface' }}">{{ $order->customer_name ?? 'Pelanggan Walk-in' }}</span>
                                     </td>
                                     <td class="py-space-md px-space-lg whitespace-nowrap">
-                                        @if (($pay?->method) === 'virtual')
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-subtle text-primary font-caption text-caption font-medium">
-                                                <span class="material-symbols-outlined text-[14px]">qr_code_2</span>
-                                                <span class="">Virtual (QRIS)</span>
-                                            </span>
-                                        @elseif (($pay?->method) === 'manual')
+                                        @if (($pay?->method) === 'manual')
                                             <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full {{ $isVoid ? 'bg-surface-container text-ink-muted' : 'bg-surface-container text-on-surface' }} font-caption text-caption font-medium">
                                                 <span class="material-symbols-outlined text-[14px]">payments</span>
                                                 <span class="">Manual (Tunai)</span>

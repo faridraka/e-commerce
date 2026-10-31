@@ -78,8 +78,8 @@ class CheckoutController extends Controller
             }
 
             $order->payments()->create([
-                'method' => 'virtual',
-                'provider' => 'midtrans',
+                'method' => 'manual',
+                'provider' => null,
                 'provider_order_id' => $order->order_code . '-1',
                 'status' => Payment::STATUS_PENDING,
                 'amount' => $total,

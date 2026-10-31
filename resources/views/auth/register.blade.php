@@ -54,7 +54,7 @@
                                 <span class="material-symbols-outlined text-[24px]">qr_code_scanner</span>
                             </div>
                             <div class="flex flex-col min-w-0">
-                                <h2 class="font-headline-sm text-headline-sm font-semibold text-on-primary">Bayar QRIS &amp; VA Otomatis</h2>
+                                <h2 class="font-headline-sm text-headline-sm font-semibold text-on-primary">Bayar Manual &amp; Mudah</h2>
                                 <p class="font-body-md text-body-md text-primary-fixed/90 mt-0.5">
                                     Transaksi instan bebas ribet langsung diverifikasi otomatis dalam hitungan detik.
                                 </p>

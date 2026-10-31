@@ -17,10 +17,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'seller' => \App\Http\Middleware\EnsureSeller::class,
         ]);
         $middleware->trustProxies(at: "*");
-
-        // Webhook Midtrans dipanggil langsung oleh server Midtrans:
-        // tidak punya sesi Laravel, jadi harus dikecualikan dari verifikasi CSRF.
-        $middleware->validateCsrfTokens(except: ['midtrans/notification']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

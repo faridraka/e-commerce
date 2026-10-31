@@ -136,12 +136,12 @@
                         @if ($order->status === 'menunggu_pembayaran' && $paymentStatus === 'pending')
                             <div class="flex items-center gap-1.5 text-caption font-caption text-secondary">
                                 <span class="material-symbols-outlined text-[18px]">schedule</span>
-                                <span>Menunggu pembayaran via Midtrans</span>
+                                <span>Menunggu konfirmasi pembayaran</span>
                             </div>
                         @elseif ($paymentStatus === 'paid')
                             <div class="flex items-center gap-1.5 text-caption font-caption text-success-text">
                                 <span class="material-symbols-outlined text-[18px]">check_circle</span>
-                                <span>Pembayaran diverifikasi otomatis via QRIS Lokalku</span>
+                                <span>Pembayaran terkonfirmasi</span>
                             </div>
                         @elseif (in_array($paymentStatus, ['failed', 'expired']))
                             <div class="flex items-center gap-1.5 text-caption font-caption text-ink-muted">

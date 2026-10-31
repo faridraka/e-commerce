@@ -248,7 +248,7 @@
                             <div class="mt-4 pt-4 border-t border-border-default flex items-start gap-2.5 bg-surface-container-low/60 p-3 rounded-lg">
                                 <span class="material-symbols-outlined text-success-text text-[20px] shrink-0 mt-0.5">verified_user</span>
                                 <p class="font-caption text-caption text-ink-muted leading-tight">
-                                    Transaksi 100% aman terlindungi <strong class="text-on-surface">Rekening Bersama Lokalku</strong> &amp; <strong class="text-on-surface">QRIS Standar Bank Indonesia</strong>.
+                                    Transaksi aman dengan <strong class="text-on-surface">konfirmasi pembayaran manual</strong> &amp; <strong class="text-on-surface">verifikasi penjual Lokalku</strong>.
                                 </p>
                             </div>
                         </div>

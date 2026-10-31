@@ -9,7 +9,6 @@ use App\Models\Payment;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 
 class CheckoutOrderFlowTest extends TestCase
@@ -122,7 +121,7 @@ class CheckoutOrderFlowTest extends TestCase
         $this->actingAs($stranger)->get(route('payment.show', $order->order_code))->assertNotFound();
     }
 
-    public function test_payment_page_shows_unconfigured_banner_without_keys(): void
+    public function test_payment_page_shows_manual_confirmation(): void
     {
         $user = $this->buyer();
         $order = Order::create([
@@ -133,42 +132,20 @@ class CheckoutOrderFlowTest extends TestCase
             'total_amount' => 50000,
         ]);
         $order->payments()->create([
-            'method' => 'virtual',
-            'provider' => 'midtrans',
+            'method' => 'manual',
+            'provider' => null,
             'provider_order_id' => 'ORD-20261030-0003-1',
             'status' => Payment::STATUS_PENDING,
             'amount' => 50000,
         ]);
 
-        Config::set('midtrans.server_key', null);
-        Config::set('midtrans.client_key', null);
-
         $this->actingAs($user)->get(route('payment.show', $order->order_code))
             ->assertOk()
-            ->assertSee('belum dikonfigurasi', false);
+            ->assertSee('Saya Sudah Bayar');
     }
 
-    public function test_midtrans_webhook_requires_valid_signature(): void
+    public function test_buyer_can_confirm_payment_manually(): void
     {
-        Config::set('midtrans.server_key', 'server-key-test');
-        Config::set('midtrans.client_key', 'client-key-test');
-
-        $payload = [
-            'order_id' => 'ORD-20261030-0004-1',
-            'status_code' => '200',
-            'gross_amount' => '50000.00',
-            'signature_key' => 'signature-salah',
-            'transaction_status' => 'settlement',
-        ];
-
-        $this->postJson(route('midtrans.webhook'), $payload)->assertStatus(403);
-    }
-
-    public function test_midtrans_webhook_marks_payment_and_order_paid(): void
-    {
-        Config::set('midtrans.server_key', 'server-key-test');
-        Config::set('midtrans.client_key', 'client-key-test');
-
         $user = $this->buyer();
         $order = Order::create([
             'order_code' => 'ORD-20261030-0005',
@@ -178,102 +155,22 @@ class CheckoutOrderFlowTest extends TestCase
             'total_amount' => 50000,
         ]);
         $order->payments()->create([
-            'method' => 'virtual',
-            'provider' => 'midtrans',
+            'method' => 'manual',
+            'provider' => null,
             'provider_order_id' => 'ORD-20261030-0005-1',
             'status' => Payment::STATUS_PENDING,
             'amount' => 50000,
         ]);
 
-        $signature = hash('sha512', 'ORD-20261030-0005-1' . '200' . '50000.00' . 'server-key-test');
+        $this->actingAs($user)->post(route('payment.confirm', $order->order_code))
+            ->assertRedirect(route('orders.show', $order->order_code));
 
-        $this->postJson(route('midtrans.webhook'), [
-            'order_id' => 'ORD-20261030-0005-1',
-            'status_code' => '200',
-            'gross_amount' => '50000.00',
-            'signature_key' => $signature,
-            'transaction_status' => 'settlement',
-            'payment_type' => 'qris',
-            'transaction_id' => 'txn-123',
-        ])->assertOk();
-
-        $payment = $order->payments()->first();
-        $this->assertSame(Payment::STATUS_PAID, $payment->status);
-        $this->assertSame('qris', $payment->payment_type);
-        $this->assertNotNull($payment->paid_at);
+        $this->assertSame(Payment::STATUS_PAID, $order->payments()->first()->status);
+        $this->assertNotNull($order->payments()->first()->paid_at);
         $this->assertSame(Order::STATUS_DIBAYAR, $order->fresh()->status);
     }
 
-    public function test_midtrans_webhook_handles_expired_transaction(): void
-    {
-        Config::set('midtrans.server_key', 'server-key-test');
-        Config::set('midtrans.client_key', 'client-key-test');
-
-        $user = $this->buyer();
-        $order = Order::create([
-            'order_code' => 'ORD-20261030-0006',
-            'user_id' => $user->id,
-            'channel' => 'online',
-            'status' => Order::STATUS_MENUNGGU_PEMBAYARAN,
-            'total_amount' => 50000,
-        ]);
-        $order->payments()->create([
-            'method' => 'virtual',
-            'provider' => 'midtrans',
-            'provider_order_id' => 'ORD-20261030-0006-1',
-            'status' => Payment::STATUS_PENDING,
-            'amount' => 50000,
-        ]);
-
-        $signature = hash('sha512', 'ORD-20261030-0006-1' . '200' . '50000.00' . 'server-key-test');
-
-        $this->postJson(route('midtrans.webhook'), [
-            'order_id' => 'ORD-20261030-0006-1',
-            'status_code' => '200',
-            'gross_amount' => '50000.00',
-            'signature_key' => $signature,
-            'transaction_status' => 'expire',
-        ])->assertOk();
-
-        $this->assertSame(Payment::STATUS_EXPIRED, $order->payments()->first()->status);
-        $this->assertSame(Order::STATUS_KEDALUWARSA, $order->fresh()->status);
-    }
-
-    public function test_payment_finish_redirects_by_transaction_status(): void
-    {
-        $user = $this->buyer();
-        $order = Order::create([
-            'order_code' => 'ORD-20261030-0007',
-            'user_id' => $user->id,
-            'channel' => 'online',
-            'status' => Order::STATUS_MENUNGGU_PEMBAYARAN,
-            'total_amount' => 50000,
-        ]);
-        $order->payments()->create([
-            'method' => 'virtual',
-            'provider' => 'midtrans',
-            'provider_order_id' => 'ORD-20261030-0007-1',
-            'status' => Payment::STATUS_PENDING,
-            'amount' => 50000,
-        ]);
-
-        // Settlement: kembali ke halaman pembayaran dengan pesan sukses.
-        $this->actingAs($user)
-            ->get(route('payment.finish', ['order_id' => 'ORD-20261030-0007-1', 'transaction_status' => 'settlement']))
-            ->assertRedirect(route('payment.show', $order->order_code));
-
-        // Pending: tetap ke halaman pembayaran dengan pesan menunggu.
-        $this->actingAs($user)
-            ->get(route('payment.finish', ['order_id' => 'ORD-20261030-0007-1', 'transaction_status' => 'pending']))
-            ->assertRedirect(route('payment.show', $order->order_code));
-
-        // Status lain (error/close): ke halaman detail order.
-        $this->actingAs($user)
-            ->get(route('payment.finish', ['order_id' => 'ORD-20261030-0007-1', 'transaction_status' => 'error']))
-            ->assertRedirect(route('orders.show', $order->order_code));
-    }
-
-    public function test_payment_finish_is_hidden_from_other_users(): void
+    public function test_payment_confirm_is_hidden_from_other_users(): void
     {
         $owner = $this->buyer();
         $stranger = $this->buyer();
@@ -285,16 +182,39 @@ class CheckoutOrderFlowTest extends TestCase
             'total_amount' => 50000,
         ]);
         $order->payments()->create([
-            'method' => 'virtual',
-            'provider' => 'midtrans',
+            'method' => 'manual',
+            'provider' => null,
             'provider_order_id' => 'ORD-20261030-0008-1',
             'status' => Payment::STATUS_PENDING,
             'amount' => 50000,
         ]);
 
         $this->actingAs($stranger)
-            ->get(route('payment.finish', ['order_id' => 'ORD-20261030-0008-1', 'transaction_status' => 'settlement']))
+            ->post(route('payment.confirm', $order->order_code))
             ->assertNotFound();
+    }
+
+    public function test_payment_confirm_rejects_already_processed_payment(): void
+    {
+        $user = $this->buyer();
+        $order = Order::create([
+            'order_code' => 'ORD-20261030-0009',
+            'user_id' => $user->id,
+            'channel' => 'online',
+            'status' => Order::STATUS_DIBAYAR,
+            'total_amount' => 50000,
+        ]);
+        $order->payments()->create([
+            'method' => 'manual',
+            'provider' => null,
+            'provider_order_id' => 'ORD-20261030-0009-1',
+            'status' => Payment::STATUS_PAID,
+            'amount' => 50000,
+            'paid_at' => now(),
+        ]);
+
+        $this->actingAs($user)->post(route('payment.confirm', $order->order_code))
+            ->assertRedirect(route('orders.show', $order->order_code));
     }
 
     public function test_profile_can_be_updated(): void

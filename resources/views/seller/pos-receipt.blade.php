@@ -13,7 +13,6 @@
     $ppn = (int) round($totalAmount - ($totalAmount / 1.11));
     $methodLabel = match ($payment?->method) {
         'manual' => 'Manual (Tunai)',
-        'virtual' => 'Virtual (QRIS)',
         default => '—',
     };
 @endphp
@@ -153,7 +152,7 @@
                                     <span class="material-symbols-outlined text-[16px] font-bold">hourglass_top</span>
                                     <span class="font-headline-sm text-caption font-bold tracking-wider uppercase">Menunggu Pembayaran</span>
                                 </div>
-                                <span class="font-caption text-caption text-ink-muted">Selesaikan pembayaran di jendela QRIS</span>
+                                <span class="font-caption text-caption text-ink-muted">Konfirmasikan pembayaran dari halaman pesanan penjual</span>
                             </div>
                         @elseif ($payStatus === 'failed')
                             <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error-container text-on-error-container shadow-sm">

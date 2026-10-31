@@ -81,7 +81,7 @@
                                 </div>
                                 <div class="flex items-start gap-space-sm">
                                     <span class="material-symbols-outlined text-success-text text-[18px] shrink-0 mt-0.5">check_circle</span>
-                                    <span class="font-body-md text-body-md text-on-surface">Pembayaran instan via QRIS &amp; Virtual Account</span>
+                                    <span class="font-body-md text-body-md text-on-surface">Konfirmasi pembayaran manual dengan sekali klik</span>
                                 </div>
                                 <div class="flex items-start gap-space-sm">
                                     <span class="material-symbols-outlined text-success-text text-[18px] shrink-0 mt-0.5">check_circle</span>

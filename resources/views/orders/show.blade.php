@@ -233,7 +233,7 @@
                                     <span class="material-symbols-outlined text-[22px] text-on-accent-yellow flex-shrink-0 mt-0.5">payments</span>
                                     <div class="flex flex-col">
                                         <span class="font-body-md text-body-md font-bold text-on-surface">Selesaikan Pembayaran Sekarang</span>
-                                        <p class="font-caption text-caption text-ink-muted">Gunakan aplikasi m-banking atau e-wallet apa pun melalui QRIS resmi.</p>
+                                        <p class="font-caption text-caption text-ink-muted">Konfirmasi setelah membayar ke penjual sesuai kesepakatan.</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-3 w-full sm:w-auto">
@@ -241,7 +241,7 @@
                                         Batalkan Pesanan
                                     </button>
                                     <a class="h-11 px-6 rounded-full bg-primary-container text-on-primary hover:bg-blue-hover transition shadow-sm font-body-md text-body-md font-bold flex-shrink-0 flex items-center justify-center gap-2" href="{{ route('payment.show', $order->order_code) }}">
-                                        <span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+                                        <span class="material-symbols-outlined text-[18px]">payments</span>
                                         <span>Bayar Sekarang</span>
                                     </a>
                                 </div>
@@ -403,8 +403,8 @@
                         <div class="flex items-center justify-between">
                             <span class="font-caption text-caption text-ink-muted">Metode Pembayaran</span>
                             <div class="flex items-center gap-1.5 font-caption font-caption font-bold text-on-surface">
-                                <span class="material-symbols-outlined text-secondary text-[16px]">qr_code_2</span>
-                                <span>{{ $payment?->payment_type ?? 'Midtrans' }}</span>
+                                <span class="material-symbols-outlined text-secondary text-[16px]">payments</span>
+                                <span>Pembayaran Manual</span>
                             </div>
                         </div>
                         <div class="flex items-center justify-between">

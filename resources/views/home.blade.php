@@ -18,7 +18,7 @@
                         Belanja Produk Lokal, <br class="hidden sm:inline">Dukung UMKM Sekitarmu
                     </h1>
                     <p class="font-body-md text-body-md text-on-surface-variant max-w-xl leading-relaxed">
-                        Pesan online, nikmati cita rasa dan kerajinan khas daerah, serta bayar praktis lewat QRIS atau Virtual Account resmi berizin.
+                        Pesan online, nikmati cita rasa dan kerajinan khas daerah, serta bayar praktis lewat transfer atau tunai saat bertemu.
                     </p>
                     <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                         <a class="inline-flex items-center justify-center h-[44px] px-8 rounded-full bg-primary-container text-on-primary font-body-md text-body-md font-bold hover:bg-blue-hover transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-container focus:ring-offset-2" href="{{ route('products.index') }}">
@@ -114,8 +114,8 @@
                         <span class="material-symbols-outlined text-[24px]">qr_code_scanner</span>
                     </div>
                     <div>
-                        <h4 class="font-headline-sm text-headline-sm font-bold text-on-surface">QRIS Serba Praktis</h4>
-                        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Pembayaran instan langsung dari m-banking atau e-wallet pilihan tanpa biaya tersembunyi.</p>
+                        <h4 class="font-headline-sm text-headline-sm font-bold text-on-surface">Bayar Serba Mudah</h4>
+                        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Bayar sesuai kesepakatan dengan penjual lalu konfirmasi dengan sekali klik.</p>
                     </div>
                 </div>
                 <div class="flex items-start gap-4">

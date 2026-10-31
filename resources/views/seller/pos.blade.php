@@ -156,19 +156,13 @@
                         </div>
                     </div>
 
-                    <!-- PAYMENT METHOD SEGMENTED CONTROL -->
-                    <div class="w-full flex flex-col gap-1.5">
-                        <label class="font-caption text-caption text-on-surface-variant">Metode Pembayaran:</label>
-                        <div class="grid grid-cols-2 p-1 bg-surface-container rounded-full gap-1">
-                            <button class="h-10 rounded-full font-caption text-caption font-bold bg-primary text-on-primary shadow-sm flex items-center justify-center gap-1 transition-all" id="btn-pay-virtual" onclick="selectPayMethod('virtual')">
-                                <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
-                                <span class="">Pembayaran Virtual/QRIS</span>
-                            </button>
-                            <button class="h-10 rounded-full font-caption text-caption text-on-surface-variant hover:text-on-surface flex items-center justify-center gap-1 transition-all" id="btn-pay-manual" onclick="selectPayMethod('manual')">
-                                <span class="material-symbols-outlined text-[16px]">payments</span>
-                                <span class="">Bayar Tunai</span>
-                            </button>
-                        </div>
+                    <!-- PAYMENT METHOD (tunai) -->
+                    <div class="w-full flex items-center justify-between bg-surface-container rounded-full px-space-md h-10">
+                        <span class="font-caption text-caption text-on-surface-variant">Metode Pembayaran</span>
+                        <span class="inline-flex items-center gap-1 font-caption text-caption font-bold text-on-surface">
+                            <span class="material-symbols-outlined text-[16px] text-primary">payments</span>
+                            Tunai
+                        </span>
                     </div>
 
                     <!-- PRIMARY CHECKOUT SUBMIT BUTTON -->
@@ -295,10 +289,6 @@
                     <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
                     <span>Selesaikan Transaksi</span>
                 </button>
-                <button class="w-full sm:w-auto px-space-lg h-12 rounded-full bg-surface-container hover:bg-blue-subtle text-primary font-body-md font-bold flex items-center justify-center gap-space-xs transition-colors" onclick="switchToVirtual()">
-                    <span class="material-symbols-outlined text-[18px]">swap_horiz</span>
-                    <span>Ganti Metode</span>
-                </button>
             </div>
 
             <!-- POS Hardware Shortcuts Footnote -->
@@ -318,350 +308,17 @@
         </div>
     </div>
 
-    <!-- ===== MODAL PEMBAYARAN VIRTUAL (QRIS / VA) ===== -->
-    <div class="fixed inset-0 top-16 z-40 bg-on-background/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto hidden" id="modal-virtual">
-        <!-- MAIN MODAL (520px radius 12px Level 3 shadow) -->
-        <div class="relative z-50 w-full max-w-[520px] bg-surface-container-lowest rounded-xl shadow-2xl overflow-hidden p-6 sm:p-7 flex flex-col gap-5 my-auto animate-in fade-in zoom-in duration-150" id="payment-modal-card">
-
-            <!-- STATE A: DEFAULT / DYNAMIC QRIS OR VA VIEW -->
-            <div class="flex flex-col gap-5" id="view-active-flow">
-
-                <!-- Header Row -->
-                <div class="flex flex-col gap-2">
-                    <div class="flex items-center justify-between">
-                        <!-- Badge QRIS partner networks -->
-                        <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-subtle text-primary rounded-full font-caption text-caption font-bold">
-                            <span class="material-symbols-outlined text-[16px]">qr_code_2</span>
-                            <span class="">QRIS &amp; E-Wallet Terintegrasi</span>
-                        </div>
-                        <button class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-container hover:bg-error-container text-ink-muted hover:text-on-error-container transition-colors" onclick="closeVirtualModal()" title="Tutup atau Batalkan">
-                            <span class="material-symbols-outlined text-[20px]">close</span>
-                        </button>
-                    </div>
-                    <div class="flex flex-wrap items-baseline justify-between gap-2 pt-1">
-                        <div>
-                            <h2 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">Pembayaran Virtual</h2>
-                            <div class="flex items-center gap-1.5 mt-0.5">
-                                <span class="font-caption text-caption text-ink-muted">No. Pesanan:</span>
-                                <span class="font-code-mono text-[12px] bg-surface-container text-on-surface font-bold px-2 py-0.5 rounded" id="virtual-order-code">-</span>
-                            </div>
-                        </div>
-                        <!-- Quick Help -->
-                        <button class="inline-flex items-center gap-1 text-primary hover:text-blue-hover font-caption text-caption font-medium">
-                            <span class="material-symbols-outlined text-[16px]">support_agent</span>
-                            <span class="">Bantuan Kasir</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Total Tagihan Banner -->
-                <div class="bg-surface-container-low rounded-xl p-4 flex items-center justify-between shadow-inner">
-                    <div class="flex flex-col">
-                        <span class="font-caption text-caption text-ink-muted font-medium">Total Tagihan Pelanggan</span>
-                        <span class="font-price-lg text-price-lg text-primary font-bold tracking-tight" id="virtual-total-display">Rp 0</span>
-                    </div>
-                    <div class="text-right">
-                        <span class="px-2.5 py-1 rounded-full bg-accent-yellow/20 text-on-accent-yellow font-caption text-caption font-bold inline-flex items-center gap-1" id="virtual-status-badge">
-                            <span class="w-2 h-2 rounded-full bg-accent-yellow animate-pulse"></span>
-                            <span id="virtual-status-text">Menunggu Bayar</span>
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Peringatan Midtrans belum dikonfigurasi -->
-                <div class="hidden flex items-start gap-2.5 p-3 rounded-lg bg-error-container text-on-error-container" id="virtual-not-configured">
-                    <span class="material-symbols-outlined text-error text-[18px] mt-0.5">error</span>
-                    <p class="font-caption text-caption leading-relaxed">Pembayaran Midtrans belum dikonfigurasi (.env). Atur MIDTRANS_SERVER_KEY &amp; MIDTRANS_CLIENT_KEY lalu buat transaksi baru.</p>
-                </div>
-
-                <!-- Method Switcher Tabs (Segmented Pill) -->
-                <div class="grid grid-cols-2 p-1 bg-surface-container rounded-full gap-1">
-                    <button class="tab-trigger inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-full font-caption text-caption font-bold transition-all bg-primary text-on-primary shadow-sm min-h-[40px]" id="tab-btn-qris" onclick="switchTab('qris')">
-                        <span class="material-symbols-outlined text-[18px]">qr_code_scanner</span>
-                        <span class="">QRIS Dinamis (Utama)</span>
-                    </button>
-                    <button class="tab-trigger inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-full font-caption text-caption font-medium text-on-surface hover:bg-surface-container-highest transition-all min-h-[40px]" id="tab-btn-va" onclick="switchTab('va')">
-                        <span class="material-symbols-outlined text-[18px]">account_balance</span>
-                        <span class="">Virtual Account Bank</span>
-                    </button>
-                </div>
-
-                <!-- TAB 1 CONTENT: QRIS DINAMIS -->
-                <div class="tab-panel flex flex-col items-center gap-3" id="panel-qris">
-                    <div class="w-full bg-surface-container-lowest rounded-xl p-5 flex flex-col items-center shadow-sm">
-                        <!-- QRIS Brand Header Bar -->
-                        <div class="w-full max-w-[260px] flex items-center justify-between pb-2 mb-2 bg-surface-container-lowest">
-                            <div class="flex items-center gap-1">
-                                <span class="font-display text-[15px] font-black text-secondary tracking-tighter">QRIS</span>
-                                <span class="text-[10px] text-ink-muted font-medium ml-1">Standar Nasional</span>
-                            </div>
-                            <!-- Supported wallets pill -->
-                            <span class="text-[9px] font-code-mono font-bold bg-surface-container px-1.5 py-0.5 rounded text-ink-muted">Gopay · OVO · Dana · BCA</span>
-                        </div>
-                        <!-- High-Fidelity Clean 240x240 QR Canvas Graphic -->
-                        <div class="relative w-[240px] h-[240px] bg-white p-3 rounded-lg shadow-sm flex flex-col items-center justify-between">
-                            <!-- Real SVG QR Matrix Simulation -->
-                            <svg class="w-full h-full text-on-surface" fill="currentColor" viewBox="0 0 100 100">
-                                <rect class="text-on-surface" height="28" rx="2" width="28" x="0" y="0"></rect>
-                                <rect fill="#FFFFFF" height="20" rx="1" width="20" x="4" y="4"></rect>
-                                <rect class="text-on-surface" height="12" rx="1" width="12" x="8" y="8"></rect>
-                                <rect class="text-on-surface" height="28" rx="2" width="28" x="72" y="0"></rect>
-                                <rect fill="#FFFFFF" height="20" rx="1" width="20" x="76" y="4"></rect>
-                                <rect class="text-on-surface" height="12" rx="1" width="12" x="80" y="8"></rect>
-                                <rect class="text-on-surface" height="28" rx="2" width="28" x="0" y="72"></rect>
-                                <rect fill="#FFFFFF" height="20" rx="1" width="20" x="4" y="76"></rect>
-                                <rect class="text-on-surface" height="12" rx="1" width="12" x="8" y="80"></rect>
-                                <rect height="4" width="4" x="34" y="2"></rect>
-                                <rect height="4" width="4" x="42" y="2"></rect>
-                                <rect height="4" width="4" x="54" y="2"></rect>
-                                <rect height="4" width="4" x="62" y="2"></rect>
-                                <rect height="4" width="8" x="38" y="8"></rect>
-                                <rect height="4" width="4" x="50" y="8"></rect>
-                                <rect height="4" width="8" x="58" y="8"></rect>
-                                <rect height="6" width="6" x="34" y="18"></rect>
-                                <rect height="8" width="4" x="46" y="16"></rect>
-                                <rect height="4" width="6" x="56" y="18"></rect>
-                                <rect height="4" width="6" x="2" y="34"></rect>
-                                <rect height="4" width="8" x="12" y="34"></rect>
-                                <rect height="4" width="4" x="24" y="34"></rect>
-                                <rect height="6" width="4" x="34" y="30"></rect>
-                                <rect height="4" width="12" x="42" y="34"></rect>
-                                <rect height="8" width="4" x="58" y="30"></rect>
-                                <rect height="4" width="8" x="68" y="34"></rect>
-                                <rect height="4" width="6" x="82" y="34"></rect>
-                                <rect height="4" width="6" x="92" y="34"></rect>
-                                <rect height="8" width="4" x="6" y="42"></rect>
-                                <rect height="4" width="8" x="16" y="44"></rect>
-                                <rect height="6" width="6" x="28" y="42"></rect>
-                                <rect height="4" width="6" x="68" y="42"></rect>
-                                <rect height="8" width="4" x="80" y="42"></rect>
-                                <rect height="6" width="6" x="90" y="44"></rect>
-                                <rect fill="#FFFFFF" height="24" rx="4" width="24" x="38" y="38"></rect>
-                                <rect class="text-primary" height="20" rx="3" width="20" x="40" y="40"></rect>
-                                <text fill="#FFFFFF" font-family="'DM Sans', sans-serif" font-size="9" font-weight="900" text-anchor="middle" x="50" y="54">L</text>
-                                <rect height="4" width="6" x="2" y="56"></rect>
-                                <rect height="6" width="4" x="14" y="58"></rect>
-                                <rect height="4" width="8" x="22" y="56"></rect>
-                                <rect height="4" width="8" x="66" y="56"></rect>
-                                <rect height="4" width="6" x="78" y="58"></rect>
-                                <rect height="6" width="6" x="90" y="56"></rect>
-                                <rect height="6" width="4" x="34" y="66"></rect>
-                                <rect height="4" width="10" x="44" y="68"></rect>
-                                <rect height="6" width="6" x="58" y="66"></rect>
-                                <rect height="6" width="6" x="34" y="76"></rect>
-                                <rect height="4" width="6" x="46" y="74"></rect>
-                                <rect height="4" width="8" x="56" y="78"></rect>
-                                <rect height="6" width="6" x="68" y="74"></rect>
-                                <rect height="4" width="8" x="80" y="76"></rect>
-                                <rect height="8" width="6" x="92" y="74"></rect>
-                                <rect height="4" width="8" x="34" y="86"></rect>
-                                <rect height="8" width="4" x="46" y="84"></rect>
-                                <rect height="6" width="8" x="54" y="86"></rect>
-                                <rect height="4" width="6" x="68" y="86"></rect>
-                                <rect height="6" width="4" x="80" y="86"></rect>
-                                <rect height="4" width="6" x="90" y="86"></rect>
-                            </svg>
-                        </div>
-                        <!-- Footer Meta for QRIS -->
-                        <div class="w-full text-center mt-3 pt-2 bg-surface-container-lowest flex flex-col gap-0.5">
-                            <p class="font-code-mono text-[11px] text-on-surface font-bold">NMID: {{ $store->activation_code }} - {{ $store->name }}</p>
-                            <p class="font-caption text-caption text-ink-muted">A/N: Kasir {{ auth()->user()->name }}</p>
-                        </div>
-                    </div>
-                    <p class="font-body-md text-body-md text-ink-muted text-center max-w-[420px]">
-                        Minta pelanggan memindai QRIS di atas dengan aplikasi mobile banking atau dompet digital apa pun.
-                    </p>
-                </div>
-
-                <!-- TAB 2 CONTENT: VIRTUAL ACCOUNT -->
-                <div class="tab-panel hidden flex flex-col gap-4" id="panel-va">
-                    <!-- Bank Selector -->
-                    <div class="flex flex-col gap-1.5">
-                        <label class="font-caption text-caption text-ink-muted font-medium">Pilih Bank Virtual Account:</label>
-                        <div class="grid grid-cols-4 gap-2">
-                            <button class="bank-pill flex flex-col items-center justify-center p-2.5 rounded-lg bg-blue-subtle text-primary font-bold text-caption font-code-mono min-h-[44px]" id="bank-bca" onclick="selectBank('BCA')">
-                                <span class="">BCA</span>
-                                <span class="text-[10px] font-sans font-normal text-primary">Otomatis</span>
-                            </button>
-                            <button class="bank-pill flex flex-col items-center justify-center p-2.5 rounded-lg bg-surface-container text-on-surface font-bold text-caption font-code-mono min-h-[44px] hover:bg-surface-container-high" id="bank-mandiri" onclick="selectBank('Mandiri')">
-                                <span class="">Mandiri</span>
-                                <span class="text-[10px] font-sans font-normal text-ink-muted">Livin</span>
-                            </button>
-                            <button class="bank-pill flex flex-col items-center justify-center p-2.5 rounded-lg bg-surface-container text-on-surface font-bold text-caption font-code-mono min-h-[44px] hover:bg-surface-container-high" id="bank-bri" onclick="selectBank('BRI')">
-                                <span class="">BRI</span>
-                                <span class="text-[10px] font-sans font-normal text-ink-muted">BRIMO</span>
-                            </button>
-                            <button class="bank-pill flex flex-col items-center justify-center p-2.5 rounded-lg bg-surface-container text-on-surface font-bold text-caption font-code-mono min-h-[44px] hover:bg-surface-container-high" id="bank-bni" onclick="selectBank('BNI')">
-                                <span class="">BNI</span>
-                                <span class="text-[10px] font-sans font-normal text-ink-muted">Mobile</span>
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Large Copyable VA Box -->
-                    <div class="bg-surface-container-low rounded-xl p-4 flex flex-col gap-2 shadow-inner">
-                        <div class="flex items-center justify-between">
-                            <span class="font-caption text-caption text-ink-muted font-medium" id="va-bank-label">Nomor BCA Virtual Account:</span>
-                            <span class="font-caption text-caption text-tertiary font-bold flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
-                                <span>Siap Menerima</span>
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between gap-2 bg-surface-container-lowest p-3 rounded-lg shadow-sm">
-                            <span class="font-code-mono text-[18px] sm:text-[20px] font-bold text-on-surface tracking-wider" id="va-number">8277 0812 3456 7890</span>
-                            <button class="inline-flex items-center gap-1 px-3 py-1.5 bg-primary text-on-primary hover:bg-blue-hover rounded-full font-caption text-caption font-bold shadow-sm transition-all min-h-[36px]" id="copy-btn" onclick="copyVANumber()">
-                                <span class="material-symbols-outlined text-[16px]">content_copy</span>
-                                <span id="copy-label" class="">Salin</span>
-                            </button>
-                        </div>
-                        <p class="font-caption text-caption text-ink-muted mt-1">
-                            Nama Rekening: <strong class="text-on-surface">{{ strtoupper($store->name) }}</strong>
-                        </p>
-                    </div>
-                    <!-- Instruction Callout -->
-                    <div class="flex items-start gap-2.5 p-3 rounded-lg bg-blue-subtle/60 text-on-surface">
-                        <span class="material-symbols-outlined text-primary text-[18px] mt-0.5">verified_user</span>
-                        <p class="font-caption text-caption text-on-surface-variant leading-relaxed">
-                            Pembayaran diverifikasi secara otomatis dalam <strong class="text-primary font-bold">5–10 detik</strong> setelah pelanggan mentransfer sesuai nominal persis <strong class="text-primary font-bold" id="va-exact-amount">Rp 0</strong>.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- REAL-TIME STATUS BAR & LIVE COUNTDOWN TIMER -->
-                <div class="bg-surface-container-low rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-inner">
-                    <div class="flex items-center gap-2.5">
-                        <!-- Animated blue spinner -->
-                        <div class="w-5 h-5 rounded-full border-2 border-primary/20 border-t-primary animate-spin"></div>
-                        <div class="flex flex-col">
-                            <span class="font-body-md text-body-md text-on-surface font-medium leading-tight">Menunggu pembayaran pelanggan...</span>
-                            <span class="font-caption text-[11px] text-ink-muted">Sinkronisasi otomatis aktif</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between sm:justify-end gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-lg shadow-sm">
-                        <span class="font-caption text-caption text-ink-muted font-medium">Sisa Waktu:</span>
-                        <span class="font-code-mono font-bold text-error text-[16px] tracking-wide" id="countdown-timer">15:00</span>
-                    </div>
-                </div>
-
-                <!-- Modal Action Footer Buttons (min height 44px) -->
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 pt-2">
-                    <!-- Urgent Outline Button -->
-                    <button class="flex-1 min-h-[44px] px-5 py-2.5 rounded-full bg-surface-container-lowest hover:bg-error-container text-error hover:text-on-error-container font-headline-sm text-[14px] font-bold shadow-sm transition-all flex items-center justify-center gap-1.5" onclick="closeVirtualModal()">
-                        <span class="material-symbols-outlined text-[18px]">cancel</span>
-                        <span class="">Batalkan Transaksi</span>
-                    </button>
-                    <!-- Secondary Switch Method Button -->
-                    <button class="flex-1 min-h-[44px] px-5 py-2.5 rounded-full bg-blue-subtle text-primary hover:bg-primary hover:text-on-primary font-headline-sm text-[14px] font-bold shadow-sm transition-all flex items-center justify-center gap-1.5" onclick="switchToCash()">
-                        <span class="material-symbols-outlined text-[18px]">swap_horiz</span>
-                        <span class="">Ganti Metode</span>
-                    </button>
-                </div>
-
-                <!-- Secondary Print Key option -->
-                <div class="flex items-center justify-between pt-1">
-                    <button class="inline-flex items-center gap-1.5 text-ink-muted hover:text-on-surface font-caption text-caption font-medium" onclick="window.print()">
-                        <span class="material-symbols-outlined text-[16px]">print</span>
-                        <span class="">Cetak Kode Bayar Pelanggan (F8)</span>
-                    </button>
-                    <span class="font-caption text-[11px] text-ink-muted">Tekan <kbd class="px-1.5 py-0.5 bg-surface-container font-code-mono rounded text-[10px]">Esc</kbd> untuk tutup</span>
-                </div>
-            </div>
-
-            <!-- STATE B: OVERLAY SUCCESS CARD -->
-            <div class="hidden flex-col items-center text-center py-4 gap-5 animate-in fade-in duration-200" id="view-success">
-                <div class="w-20 h-20 rounded-full bg-tertiary-fixed flex items-center justify-center shadow-lg">
-                    <span class="material-symbols-outlined text-tertiary-container text-[48px]" style="font-variation-settings: &quot;FILL&quot; 1;">check_circle</span>
-                </div>
-                <div class="flex flex-col gap-1 max-w-[380px]">
-                    <span class="px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-caption text-caption font-bold inline-block mx-auto mb-1">
-                        Transaksi Berhasil Terverifikasi
-                    </span>
-                    <h2 class="font-headline-lg text-headline-lg text-on-surface font-bold">Pembayaran Diterima!</h2>
-                    <p class="font-price-lg text-price-lg text-tertiary font-bold tracking-tight" id="success-amount-line">Rp 0 LUNAS</p>
-                    <p class="font-caption text-caption text-ink-muted mt-1">
-                        Metode: <strong class="text-on-surface">QRIS / Virtual Account (Midtrans)</strong><br>
-                        No. Pesanan: <span class="font-code-mono text-on-surface font-bold" id="success-order-code">-</span>
-                    </p>
-                </div>
-                <!-- Success Struk Details Box -->
-                <div class="w-full bg-surface-container-low rounded-xl p-4 text-left flex flex-col gap-2 font-caption text-caption">
-                    <div class="flex justify-between">
-                        <span class="text-ink-muted">Waktu Bayar:</span>
-                        <span class="font-code-mono font-medium text-on-surface" id="success-paid-at">-</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-ink-muted">Kasir Bertugas:</span>
-                        <span class="text-on-surface font-medium">{{ auth()->user()->name }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-ink-muted">Penerima Dana:</span>
-                        <span class="text-on-surface font-medium">{{ $store->name }}</span>
-                    </div>
-                </div>
-                <!-- Action Pills -->
-                <div class="w-full flex flex-col sm:flex-row gap-3">
-                    <button class="flex-1 min-h-[44px] bg-primary text-on-primary hover:bg-blue-hover rounded-full font-headline-sm text-[14px] font-bold shadow-md transition-all flex items-center justify-center gap-2" onclick="window.print()">
-                        <span class="material-symbols-outlined text-[20px]">print</span>
-                        <span class="">Cetak Struk Transaksi (F11)</span>
-                    </button>
-                    <button class="flex-1 min-h-[44px] bg-surface-container hover:bg-surface-container-highest text-on-surface rounded-full font-headline-sm text-[14px] font-bold shadow-sm transition-all flex items-center justify-center gap-2" onclick="closeVirtualModal()">
-                        <span class="material-symbols-outlined text-[20px]">done_all</span>
-                        <span class="">Selesai &amp; Buka Baru (F10)</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- STATE C: OVERLAY EXPIRED CARD -->
-            <div class="hidden flex-col items-center text-center py-4 gap-5 animate-in fade-in duration-200" id="view-expired">
-                <div class="w-20 h-20 rounded-full bg-error-container flex items-center justify-center shadow-lg">
-                    <span class="material-symbols-outlined text-error text-[48px]">timer_off</span>
-                </div>
-                <div class="flex flex-col gap-1 max-w-[380px]">
-                    <span class="px-3 py-1 rounded-full bg-error-container text-on-error-container font-caption text-caption font-bold inline-block mx-auto mb-1">
-                        Status: Batas Waktu Terlampaui
-                    </span>
-                    <h2 class="font-headline-lg text-headline-lg text-error font-bold">Waktu Pembayaran Habis</h2>
-                    <p class="font-body-md text-body-md text-ink-muted leading-relaxed">
-                        Kode QRIS dinamis tidak lagi valid untuk transaksi <strong class="text-on-surface" id="expired-order-code">-</strong> demi keamanan saldo kasir.
-                    </p>
-                </div>
-                <div class="w-full bg-error-container/40 p-4 rounded-xl flex items-center gap-3 text-left">
-                    <span class="material-symbols-outlined text-error text-[24px]">info</span>
-                    <p class="font-caption text-caption text-on-surface">
-                        Jangan menerima pembayaran jika pelanggan mentransfer setelah sesi kedaluwarsa. Silakan refresh kode bayar.
-                    </p>
-                </div>
-                <!-- Action Pills -->
-                <div class="w-full flex flex-col sm:flex-row gap-3">
-                    <button class="flex-1 min-h-[44px] bg-primary text-on-primary hover:bg-blue-hover rounded-full font-headline-sm text-[14px] font-bold shadow-md transition-all flex items-center justify-center gap-2" onclick="closeVirtualModal()">
-                        <span class="material-symbols-outlined text-[20px]">refresh</span>
-                        <span class="">Buat Ulang Kode QRIS</span>
-                    </button>
-                    <button class="flex-1 min-h-[44px] bg-surface-container hover:bg-surface-container-highest text-on-surface rounded-full font-headline-sm text-[14px] font-bold shadow-sm transition-all flex items-center justify-center gap-2" onclick="closeVirtualModal()">
-                        <span class="">Kembali ke Keranjang</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 @endsection
 
 @push('scripts')
 <script>
     // ===== Konfigurasi dari server =====
-    const MIDTRANS_SNAP_URL = "{{ config('midtrans.is_production') ? 'https://app.midtrans.com' : 'https://app.sandbox.midtrans.com' }}/snap/snap.js";
-    const MIDTRANS_CLIENT_KEY = "{{ config('midtrans.client_key') }}";
     const POS_HISTORY_URL = "{{ route('seller.pos.history') }}";
 
     // ===== State =====
     const cart = new Map(); // product_id -> { id, name, price, stock, qty }
-    let selectedPayMethod = 'virtual';
     let cashReceived = 0;
     let cashTotal = 0;
-    let pollTimer = null;
-    let countdownTimer = null;
-    let snapLoaded = false;
-    let activeOrderCode = null;
 
     const rupiah = (n) => 'Rp ' + Math.round(n).toLocaleString('id-ID');
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -716,7 +373,8 @@
     }
     document.getElementById('barcode-search-input').addEventListener('input', () => applyCatalogFilter());
 
-    // ===== Keranjang kasir =====
+    // ===== Modal tunai =====
+    function openCashModal() {
     function getProductCard(id) {
         return document.querySelector('#catalog-grid article[data-product-id="' + id + '"]');
     }
@@ -818,20 +476,6 @@
         checkoutBtn.classList.toggle('pointer-events-none', empty);
     }
 
-    // ===== Metode pembayaran =====
-    function selectPayMethod(method) {
-        selectedPayMethod = method === 'manual' ? 'manual' : 'virtual';
-        const virtualBtn = document.getElementById('btn-pay-virtual');
-        const manualBtn = document.getElementById('btn-pay-manual');
-        if (selectedPayMethod === 'virtual') {
-            virtualBtn.className = 'h-10 rounded-full font-caption text-caption font-bold bg-primary text-on-primary shadow-sm flex items-center justify-center gap-1 transition-all';
-            manualBtn.className = 'h-10 rounded-full font-caption text-caption text-on-surface-variant hover:text-on-surface flex items-center justify-center gap-1 transition-all';
-        } else {
-            manualBtn.className = 'h-10 rounded-full font-caption text-caption font-bold bg-primary text-on-primary shadow-sm flex items-center justify-center gap-1 transition-all';
-            virtualBtn.className = 'h-10 rounded-full font-caption text-caption text-on-surface-variant hover:text-on-surface flex items-center justify-center gap-1 transition-all';
-        }
-    }
-
     // ===== Modal tunai =====
     function openCashModal() {
         const { kinds, pieces, total } = cartTotals();
@@ -847,15 +491,6 @@
     }
     function closeCashModal() {
         document.getElementById('modal-cash').classList.add('hidden');
-    }
-    function switchToVirtual() {
-        closeCashModal();
-        startVirtualCheckout();
-    }
-    function switchToCash() {
-        stopPolling();
-        closeVirtualModal();
-        openCashModal();
     }
     function renderCashChips() {
         const wrap = document.getElementById('cash-chips');
@@ -939,146 +574,10 @@
         }
     }
 
-    // ===== Modal virtual (QRIS / VA via Midtrans Snap) =====
-    function openVirtualModalShell() {
-        ['view-active-flow', 'view-success', 'view-expired'].forEach(id => {
-            const el = document.getElementById(id);
-            el.classList.toggle('hidden', id !== 'view-active-flow');
-            if (id !== 'view-active-flow') el.classList.remove('flex');
-        });
-        document.getElementById('virtual-not-configured').classList.add('hidden');
-        document.getElementById('modal-virtual').classList.remove('hidden');
-        startCountdown();
-    }
-    function closeVirtualModal() {
-        stopPolling();
-        stopCountdown();
-        document.getElementById('modal-virtual').classList.add('hidden');
-    }
-    function startVirtualCheckout() {
-        if (cart.size === 0) return;
-        fetch('{{ route('seller.pos.checkout') }}', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
-            body: JSON.stringify({
-                items: [...cart.values()].map(item => ({ product_id: item.id, quantity: item.qty })),
-                payment_method: 'virtual',
-                customer_name: document.getElementById('customer-name-input').value.trim() || null,
-            }),
-        }).then(async (res) => {
-            const data = await res.json();
-            if (!res.ok) { showToast(data.message || 'Transaksi gagal diproses.', true); return; }
-            activeOrderCode = data.order_code;
-            openVirtualModalShell();
-            document.getElementById('virtual-order-code').textContent = data.order_code;
-            document.getElementById('virtual-total-display').textContent = rupiah(data.total);
-            document.getElementById('va-exact-amount').textContent = rupiah(data.total);
-            if (!data.midtrans_configured || !data.snap_token) {
-                document.getElementById('virtual-not-configured').classList.remove('hidden');
-            } else {
-                loadSnapScript(() => window.snap.pay(data.snap_token));
-            }
-            startPolling(data.status_url, data.receipt_url, data.order_code, data.total);
-        }).catch(() => showToast('Gagal terhubung ke server. Coba lagi.', true));
-    }
-    function loadSnapScript(onReady) {
-        if (snapLoaded && window.snap) { onReady(); return; }
-        const script = document.createElement('script');
-        script.src = MIDTRANS_SNAP_URL;
-        script.setAttribute('data-client-key', MIDTRANS_CLIENT_KEY);
-        script.onload = () => { snapLoaded = true; onReady(); };
-        script.onerror = () => showToast('Gagal memuat Midtrans Snap. Periksa koneksi.', true);
-        document.body.appendChild(script);
-    }
-    function startPolling(statusUrl, receiptUrl, orderCode, total) {
-        stopPolling();
-        pollTimer = setInterval(async () => {
-            try {
-                const res = await fetch(statusUrl, { headers: { 'Accept': 'application/json' } });
-                if (!res.ok) return;
-                const data = await res.json();
-                if (data.status === 'paid') {
-                    stopPolling();
-                    stopCountdown();
-                    document.getElementById('success-order-code').textContent = orderCode;
-                    document.getElementById('success-amount-line').textContent = rupiah(total) + ' LUNAS';
-                    document.getElementById('success-paid-at').textContent = new Date().toLocaleString('id-ID') + ' WIB';
-                    showVirtualView('view-success');
-                    setTimeout(() => { window.location = receiptUrl; }, 1200);
-                } else if (data.status === 'expired' || data.status === 'failed' || data.status === 'cancelled') {
-                    stopPolling();
-                    stopCountdown();
-                    if (data.status === 'expired') {
-                        document.getElementById('expired-order-code').textContent = orderCode;
-                        showVirtualView('view-expired');
-                    } else {
-                        showToast('Pembayaran ' + data.status + '. Transaksi dibatalkan.', true);
-                        closeVirtualModal();
-                    }
-                }
-            } catch (e) { /* coba lagi pada siklus berikutnya */ }
-        }, 3000);
-    }
-    function stopPolling() {
-        if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
-    }
-    function showVirtualView(viewId) {
-        ['view-active-flow', 'view-success', 'view-expired'].forEach(id => {
-            const el = document.getElementById(id);
-            el.classList.toggle('hidden', id !== viewId);
-            if (id === viewId) el.classList.add('flex');
-        });
-    }
-    function startCountdown() {
-        stopCountdown();
-        let remaining = 15 * 60;
-        const el = document.getElementById('countdown-timer');
-        const tick = () => {
-            const m = String(Math.floor(remaining / 60)).padStart(2, '0');
-            const s = String(remaining % 60).padStart(2, '0');
-            el.textContent = m + ':' + s;
-            if (remaining <= 0) {
-                stopCountdown(); stopPolling();
-                document.getElementById('expired-order-code').textContent = activeOrderCode || '-';
-                showVirtualView('view-expired');
-                return;
-            }
-            remaining -= 1;
-        };
-        tick();
-        countdownTimer = setInterval(tick, 1000);
-    }
-    function stopCountdown() {
-        if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
-    }
-    function switchTab(tab) {
-        const qrisBtn = document.getElementById('tab-btn-qris');
-        const vaBtn = document.getElementById('tab-btn-va');
-        const activeClass = 'tab-trigger inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-full font-caption text-caption font-bold transition-all bg-primary text-on-primary shadow-sm min-h-[40px]';
-        const inactiveClass = 'tab-trigger inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-full font-caption text-caption font-medium text-on-surface hover:bg-surface-container-highest transition-all min-h-[40px]';
-        qrisBtn.className = tab === 'qris' ? activeClass : inactiveClass;
-        vaBtn.className = tab === 'va' ? activeClass : inactiveClass;
-        document.getElementById('panel-qris').classList.toggle('hidden', tab !== 'qris');
-        document.getElementById('panel-va').classList.toggle('hidden', tab !== 'va');
-    }
-    function selectBank(bank) {
-        document.querySelectorAll('.bank-pill').forEach(el => {
-            el.className = 'bank-pill flex flex-col items-center justify-center p-2.5 rounded-lg bg-surface-container text-on-surface font-bold text-caption font-code-mono min-h-[44px] hover:bg-surface-container-high';
-        });
-        document.getElementById('bank-' + bank.toLowerCase()).className = 'bank-pill flex flex-col items-center justify-center p-2.5 rounded-lg bg-blue-subtle text-primary font-bold text-caption font-code-mono min-h-[44px]';
-        document.getElementById('va-bank-label').textContent = 'Nomor ' + bank + ' Virtual Account:';
-    }
-    function copyVANumber() {
-        navigator.clipboard?.writeText(document.getElementById('va-number').textContent.trim());
-        const label = document.getElementById('copy-label');
-        label.textContent = 'Tersalin';
-        setTimeout(() => { label.textContent = 'Salin'; }, 2000);
-    }
     function openPaymentModal() {
         const { total } = cartTotals();
         if (total <= 0) return;
-        if (selectedPayMethod === 'manual') openCashModal();
-        else startVirtualCheckout();
+        openCashModal();
     }
 
     // ===== Hotkey kasir =====
@@ -1091,7 +590,6 @@
             window.location = POS_HISTORY_URL;
         } else if (e.key === 'Escape') {
             closeCashModal();
-            closeVirtualModal();
         }
     });
 

@@ -204,7 +204,7 @@
                     <div class="bg-surface-container-low rounded-lg p-3.5 flex items-start gap-2.5">
                         <span class="material-symbols-outlined text-success-text text-[20px] shrink-0" style="font-variation-settings: 'FILL' 1;">verified_user</span>
                         <p class="font-caption text-caption text-on-surface-variant leading-relaxed">
-                            Keamanan transaksi terjamin 100% dengan <span class="font-bold text-on-surface">QRIS</span> &amp; sistem escrow <span class="font-bold text-on-surface">Rekening Bersama Lokalku</span>.
+                            Keamanan transaksi terjamin dengan <span class="font-bold text-on-surface">konfirmasi pembayaran</span> &amp; sistem <span class="font-bold text-on-surface">verifikasi penjual Lokalku</span>.
                         </p>
                     </div>
                 </div>

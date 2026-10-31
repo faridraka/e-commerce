@@ -276,31 +276,15 @@ class SellerPortalTest extends TestCase
         $this->assertSame(2, $product->fresh()->stock);
     }
 
-    public function test_pos_virtual_checkout_creates_pending_payment(): void
+    public function test_pos_rejects_non_cash_payment_method(): void
     {
         $seller = $this->seller();
         $product = Product::factory()->create(['store_id' => $seller->store->id, 'price' => 20000, 'stock' => 5]);
 
-        $response = $this->actingAs($seller)->postJson(route('seller.pos.checkout'), [
+        $this->actingAs($seller)->postJson(route('seller.pos.checkout'), [
             'items' => [['product_id' => $product->id, 'quantity' => 1]],
             'payment_method' => 'virtual',
-        ]);
-
-        $response->assertOk();
-        $payload = $response->json();
-
-        $this->assertSame(false, $payload['midtrans_configured']);
-        $this->assertNull($payload['snap_token']);
-
-        $order = Order::where('channel', 'pos')->first();
-        $this->assertSame(Order::STATUS_MENUNGGU_PEMBAYARAN, $order->status);
-        $this->assertSame(Payment::STATUS_PENDING, $order->payments()->first()->status);
-
-        // Polling status tanpa Midtrans tetap pending
-        $this->actingAs($seller)
-            ->getJson(route('seller.pos.payment-status', $order->order_code))
-            ->assertOk()
-            ->assertJson(['status' => Payment::STATUS_PENDING]);
+        ])->assertStatus(422);
     }
 
     public function test_pos_pages_require_seller(): void
@@ -334,7 +318,6 @@ class SellerPortalTest extends TestCase
         $this->assertNotNull($order);
 
         $this->actingAs($other)->get(route('seller.pos.receipt', $order->order_code))->assertNotFound();
-        $this->actingAs($other)->getJson(route('seller.pos.payment-status', $order->order_code))->assertNotFound();
     }
 
     public function test_other_seller_cannot_view_online_order_detail(): void

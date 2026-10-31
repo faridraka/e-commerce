@@ -61,12 +61,11 @@ Route::middleware(['auth', 'onboarding.completed'])->group(function () {
     Route::get('checkout', [CheckoutController::class, 'show'])->name('checkout.index');
     Route::post('checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
-    // Orders & payment
+    // Orders
     Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{order:order_code}', [OrderController::class, 'show'])->name('orders.show');
     Route::get('orders/{order:order_code}/payment', [PaymentController::class, 'show'])->name('payment.show');
-    Route::post('orders/{order:order_code}/payment/token', [PaymentController::class, 'snapToken'])->name('payment.token');
-    Route::get('payment/finish', [PaymentController::class, 'finish'])->name('payment.finish');
+    Route::post('orders/{order:order_code}/payment/confirm', [PaymentController::class, 'confirm'])->name('payment.confirm');
 
     // Profile
     Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
@@ -79,9 +78,6 @@ Route::middleware(['auth', 'onboarding.completed'])->group(function () {
     Route::delete('addresses/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy');
     Route::post('addresses/{address}/default', [AddressController::class, 'setDefault'])->name('addresses.setDefault');
 });
-
-// Webhook notifikasi Midtrans (dipanggil server Midtrans, tanpa sesi/CSRF)
-Route::post('midtrans/notification', [PaymentController::class, 'webhook'])->name('midtrans.webhook');
 
 // Portal Penjual & Kasir POS (wajib seller dengan toko terverifikasi)
 use App\Http\Controllers\Seller\CategoryController as SellerCategoryController;
@@ -121,7 +117,6 @@ Route::prefix('seller')->middleware(['auth', 'onboarding.completed', 'seller'])-
     Route::get('pos', [PosController::class, 'terminal'])->name('seller.pos');
     Route::post('pos/checkout', [PosController::class, 'checkout'])->name('seller.pos.checkout');
     Route::get('pos/riwayat', [PosController::class, 'history'])->name('seller.pos.history');
-    Route::get('pos/{order:order_code}/payment-status', [PosController::class, 'paymentStatus'])->name('seller.pos.payment-status');
     Route::get('pos/{order:order_code}/struk', [PosController::class, 'receipt'])->name('seller.pos.receipt');
 });
 

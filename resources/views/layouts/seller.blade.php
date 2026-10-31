@@ -110,7 +110,7 @@
         <div class="flex items-center gap-space-md">
             <div class="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-subtle/70 border border-primary-fixed">
                 <span class="material-symbols-outlined text-primary text-[18px]">verified</span>
-                <span class="font-caption text-caption font-medium text-primary">QRIS &amp; Midtrans Aktif</span>
+                <span class="font-caption text-caption font-medium text-primary">Kasir Tunai Aktif</span>
             </div>
             <div class="flex items-center gap-space-xs">
                 <a class="h-10 px-4 rounded-full border border-border-default bg-surface-card text-on-surface font-body-md text-body-md font-medium hover:bg-surface-container-high transition-colors flex items-center gap-1.5" href="{{ route('seller.products.create') }}">

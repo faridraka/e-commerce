@@ -7,7 +7,6 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\StockMovement;
-use App\Services\MidtransService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +14,7 @@ use Illuminate\View\View;
 
 class PosController extends Controller
 {
-    public function __construct(private MidtransService $midtrans)
+    public function __construct()
     {
     }
 
@@ -40,7 +39,7 @@ class PosController extends Controller
     }
 
     /**
-     * Selesaikan transaksi kasir: tunai (manual) atau virtual (Midtrans Snap).
+     * Selesaikan transaksi kasir: pembayaran tunai.
      */
     public function checkout(Request $request): JsonResponse
     {
@@ -48,8 +47,8 @@ class PosController extends Controller
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'integer'],
             'items.*.quantity' => ['required', 'integer', 'min:1', 'max:999'],
-            'payment_method' => ['required', 'in:cash,virtual'],
-            'received_amount' => ['nullable', 'numeric', 'min:0'],
+            'payment_method' => ['required', 'in:cash'],
+            'received_amount' => ['required', 'numeric', 'min:0'],
             'customer_name' => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -90,16 +89,14 @@ class PosController extends Controller
             ], 422);
         }
 
-        $order = DB::transaction(function () use ($validated, $lines, $total, $request) {
-            $isCash = $validated['payment_method'] === 'cash';
-
+        $order = DB::transaction(function () use ($validated, $lines, $total) {
             $order = Order::create([
                 'order_code' => Order::generateCode(),
                 'user_id' => null,
                 'address_id' => null,
                 'channel' => 'pos',
-                // Tunai dianggap lunas seketika; virtual menunggu pembayaran.
-                'status' => $isCash ? Order::STATUS_DIBAYAR : Order::STATUS_MENUNGGU_PEMBAYARAN,
+                // Tunai dianggap lunas seketika.
+                'status' => Order::STATUS_DIBAYAR,
                 'total_amount' => $total,
                 'customer_name' => $validated['customer_name'] ?? 'Pelanggan Kasir',
             ]);
@@ -123,103 +120,23 @@ class PosController extends Controller
                 ]);
             }
 
-            $isCash = $validated['payment_method'] === 'cash';
-
             $order->payments()->create([
-                'method' => $isCash ? 'manual' : 'virtual',
-                'provider' => $isCash ? null : 'midtrans',
+                'method' => 'manual',
+                'provider' => null,
                 'provider_order_id' => $order->order_code . '-1',
-                'status' => $isCash ? Payment::STATUS_PAID : Payment::STATUS_PENDING,
+                'status' => Payment::STATUS_PAID,
                 'amount' => $total,
-                'amount_received' => $isCash ? (float) $validated['received_amount'] : null,
-                'payment_type' => $isCash ? 'cash' : null,
-                'paid_at' => $isCash ? now() : null,
+                'amount_received' => (float) $validated['received_amount'],
+                'payment_type' => 'cash',
+                'paid_at' => now(),
             ]);
 
             return $order;
         });
 
-        if ($validated['payment_method'] === 'cash') {
-            return response()->json([
-                'order_code' => $order->order_code,
-                'redirect_url' => route('seller.pos.receipt', $order->order_code),
-            ]);
-        }
-
-        // Virtual: siapkan Snap token bila Midtrans terkonfigurasi.
-        $payment = $order->latestPayment();
-        $snapToken = null;
-        $redirectUrl = null;
-
-        if ($this->midtrans->isConfigured()) {
-            try {
-                $snap = $this->midtrans->createSnapTransaction($payment);
-                $snapToken = $snap['token'];
-                $redirectUrl = $snap['redirect_url'];
-            } catch (\Throwable $e) {
-                $this->midtrans->logWebhook('Gagal membuat Snap token POS', ['error' => $e->getMessage()]);
-            }
-        }
-
         return response()->json([
             'order_code' => $order->order_code,
-            'total' => (float) $total,
-            'snap_token' => $snapToken,
-            'redirect_url' => $redirectUrl,
-            'midtrans_configured' => $this->midtrans->isConfigured(),
-            'status_url' => route('seller.pos.payment-status', $order->order_code),
-            'receipt_url' => route('seller.pos.receipt', $order->order_code),
-        ]);
-    }
-
-    /**
-     * Endpoint polling status pembayaran virtual (Snap).
-     */
-    public function paymentStatus(Request $request, Order $order): JsonResponse
-    {
-        abort_unless($this->belongsToStore($request, $order), 404);
-
-        $payment = $order->latestPayment();
-
-        if (! $payment) {
-            return response()->json(['status' => 'not_found'], 404);
-        }
-
-        if ($payment->status === Payment::STATUS_PENDING && $this->midtrans->isConfigured()) {
-            try {
-                \Midtrans\Config::$serverKey = config('midtrans.server_key');
-                \Midtrans\Config::$isProduction = (bool) config('midtrans.is_production');
-
-                $transaction = \Midtrans\Transaction::status($payment->provider_order_id);
-                $status = $this->midtrans->mapTransactionStatus(
-                    (string) $transaction->transaction_status,
-                    (string) ($transaction->fraud_status ?? 'accept'),
-                );
-
-                if ($status !== $payment->status) {
-                    $payment->forceFill([
-                        'status' => $status,
-                        'payment_type' => $transaction->payment_type ?? $payment->payment_type,
-                        'provider_transaction_id' => $transaction->transaction_id ?? $payment->provider_transaction_id,
-                        'paid_at' => $status === Payment::STATUS_PAID ? now() : $payment->paid_at,
-                    ])->save();
-
-                    // Sinkronkan status pesanan hasil pembayaran.
-                    if ($order->status === Order::STATUS_MENUNGGU_PEMBAYARAN) {
-                        $order->forceFill(['status' => $status === Payment::STATUS_PAID
-                            ? Order::STATUS_DIBAYAR
-                            : Order::STATUS_KEDALUWARSA,
-                        ])->save();
-                    }
-                }
-            } catch (\Throwable $e) {
-                $this->midtrans->logWebhook('Gagal cek status POS', ['error' => $e->getMessage()]);
-            }
-        }
-
-        return response()->json([
-            'status' => $payment->refresh()->status,
-            'order_status' => $order->status,
+            'redirect_url' => route('seller.pos.receipt', $order->order_code),
         ]);
     }
 

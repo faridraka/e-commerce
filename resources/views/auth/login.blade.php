@@ -37,7 +37,7 @@
                             Belanja Mudah, Berdayakan UMKM Lokal
                         </h1>
                         <p class="font-body-md text-body-md text-blue-subtle/90 mb-8 leading-relaxed">
-                            Akses keranjang belanja, pantau status pengiriman pesanan, dan nikmati kemudahan transaksi resmi QRIS &amp; Virtual Account.
+                            Akses keranjang belanja, pantau status pengiriman pesanan, dan nikmati kemudahan transaksi manual terverifikasi.
                         </p>
                         <div class="space-y-5">
                             <div class="flex items-start gap-3.5">
@@ -45,8 +45,8 @@
                                     <span class="material-symbols-outlined text-[20px]">qr_code_scanner</span>
                                 </div>
                                 <div>
-                                    <h4 class="font-headline-sm text-headline-sm text-white font-semibold">Bayar QRIS &amp; VA Otomatis</h4>
-                                    <p class="font-body-md text-body-md text-blue-subtle/80 mt-0.5">Verifikasi transaksi instan tanpa perlu konfirmasi manual.</p>
+                                    <h4 class="font-headline-sm text-headline-sm text-white font-semibold">Konfirmasi Bayar Manual</h4>
+                                    <p class="font-body-md text-body-md text-blue-subtle/80 mt-0.5">Tandai pembayaran selesai, penjual langsung memproses pesanan.</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-3.5">

@@ -23,7 +23,6 @@ class Payment extends Model
         'provider',
         'provider_order_id',
         'provider_transaction_id',
-        'snap_token',
         'redirect_url',
         'payment_type',
         'expires_at',
