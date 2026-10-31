@@ -30,7 +30,11 @@ set_env DB_USERNAME "$DB_USERNAME"
 set_env DB_PASSWORD "$DB_PASSWORD"
 
 # 3. Dependency PHP + audit keamanan
-composer install --no-interaction --prefer-dist
+if [ "${APP_ENV}" = "production" ]; then
+  composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+else
+  composer install --no-interaction --prefer-dist
+fi
 echo ">> laravel/framework: $(composer show laravel/framework 2>/dev/null | grep -m1 '^versions' || echo 'tidak ditemukan')"
 composer audit || echo "!! PERINGATAN: composer audit menemukan advisory, jalankan 'composer update' lalu cek lagi."
 

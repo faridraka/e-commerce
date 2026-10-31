@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'onboarding.completed' => \App\Http\Middleware\EnsureOnboardingCompleted::class,
             'seller' => \App\Http\Middleware\EnsureSeller::class,
         ]);
+        $middleware->trustProxies(at: "*");
 
         // Webhook Midtrans dipanggil langsung oleh server Midtrans:
         // tidak punya sesi Laravel, jadi harus dikecualikan dari verifikasi CSRF.
