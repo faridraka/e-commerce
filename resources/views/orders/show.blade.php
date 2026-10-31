@@ -485,6 +485,7 @@
         <span id="toast-message">Teks notifikasi</span>
     </div>
 </div>
+@endsection
 @push('scripts')
 <script>
     function showToast(message) {

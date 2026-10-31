@@ -81,6 +81,48 @@ Route::middleware(['auth', 'onboarding.completed'])->group(function () {
 // Webhook notifikasi Midtrans (dipanggil server Midtrans, tanpa sesi/CSRF)
 Route::post('midtrans/notification', [PaymentController::class, 'webhook'])->name('midtrans.webhook');
 
+// Portal Penjual & Kasir POS (wajib seller dengan toko terverifikasi)
+use App\Http\Controllers\Seller\CategoryController as SellerCategoryController;
+use App\Http\Controllers\Seller\DashboardController;
+use App\Http\Controllers\Seller\OrderController as SellerOrderController;
+use App\Http\Controllers\Seller\PosController;
+use App\Http\Controllers\Seller\ProductController as SellerProductController;
+use App\Http\Controllers\Seller\StockController as SellerStockController;
+
+Route::prefix('seller')->middleware(['auth', 'onboarding.completed', 'seller'])->group(function () {
+    Route::get('dasbor', DashboardController::class)->name('seller.dashboard');
+
+    // Kategori
+    Route::get('kategori', [SellerCategoryController::class, 'index'])->name('seller.categories');
+    Route::post('kategori', [SellerCategoryController::class, 'store'])->name('seller.categories.store');
+    Route::patch('kategori/{category}', [SellerCategoryController::class, 'update'])->name('seller.categories.update');
+    Route::delete('kategori/{category}', [SellerCategoryController::class, 'destroy'])->name('seller.categories.destroy');
+
+    // Produk
+    Route::get('produk', [SellerProductController::class, 'index'])->name('seller.products');
+    Route::get('produk/tambah', [SellerProductController::class, 'create'])->name('seller.products.create');
+    Route::post('produk', [SellerProductController::class, 'store'])->name('seller.products.store');
+    Route::get('produk/{product}/ubah', [SellerProductController::class, 'edit'])->name('seller.products.edit');
+    Route::put('produk/{product}', [SellerProductController::class, 'update'])->name('seller.products.update');
+    Route::patch('produk/{product}/toggle', [SellerProductController::class, 'toggle'])->name('seller.products.toggle');
+
+    // Stok
+    Route::get('stok', [SellerStockController::class, 'index'])->name('seller.stock');
+    Route::post('stok', [SellerStockController::class, 'adjust'])->name('seller.stock.adjust');
+
+    // Pesanan online
+    Route::get('pesanan', [SellerOrderController::class, 'index'])->name('seller.orders');
+    Route::get('pesanan/{order:order_code}', [SellerOrderController::class, 'show'])->name('seller.orders.show');
+    Route::post('pesanan/{order:order_code}/status', [SellerOrderController::class, 'updateStatus'])->name('seller.orders.status');
+
+    // Kasir POS
+    Route::get('pos', [PosController::class, 'terminal'])->name('seller.pos');
+    Route::post('pos/checkout', [PosController::class, 'checkout'])->name('seller.pos.checkout');
+    Route::get('pos/riwayat', [PosController::class, 'history'])->name('seller.pos.history');
+    Route::get('pos/{order:order_code}/payment-status', [PosController::class, 'paymentStatus'])->name('seller.pos.payment-status');
+    Route::get('pos/{order:order_code}/struk', [PosController::class, 'receipt'])->name('seller.pos.receipt');
+});
+
 // Endpoint JSON publik
 Route::prefix('api')->group(function () {
     Route::get('products', [ProductController::class, 'apiIndex'])->name('api.products.index');

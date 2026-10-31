@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'onboarding.completed' => \App\Http\Middleware\EnsureOnboardingCompleted::class,
+            'seller' => \App\Http\Middleware\EnsureSeller::class,
         ]);
 
         // Webhook Midtrans dipanggil langsung oleh server Midtrans:

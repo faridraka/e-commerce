@@ -210,6 +210,7 @@
         @endif
     </section>
 </div>
+@endsection
 @push('scripts')
 <script>
     // Filter tab status (visual) + pencarian klien-side pada halaman aktif
