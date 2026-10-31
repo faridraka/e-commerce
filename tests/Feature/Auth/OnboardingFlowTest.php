@@ -138,7 +138,7 @@ class OnboardingFlowTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('onboarding.verification.store'), ['activation_code' => 'lkl-7294-9102'])
-            ->assertRedirect(route('home'));
+            ->assertRedirect(route('seller.dashboard'));
 
         $this->assertNotNull($store->fresh()->verified_at);
         $this->assertSame($user->id, $store->fresh()->user_id);

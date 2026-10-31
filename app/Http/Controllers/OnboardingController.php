@@ -134,7 +134,7 @@ class OnboardingController extends Controller
             $request->user()->forceFill(['onboarding_completed_at' => now()])->save();
         });
 
-        return redirect()->route('home')->with('status', 'Verifikasi berhasil! Selamat datang di Dasbor Penjual Lokalku.');
+        return redirect()->route('seller.dashboard')->with('status', 'Verifikasi berhasil! Selamat datang di Dasbor Penjual Lokalku.');
     }
 
     /**

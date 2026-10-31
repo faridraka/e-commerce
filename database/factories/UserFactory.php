@@ -42,4 +42,15 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * Pembeli dengan onboarding selesai.
+     */
+    public function buyer(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'buyer',
+            'onboarding_completed_at' => now(),
+        ]);
+    }
 }

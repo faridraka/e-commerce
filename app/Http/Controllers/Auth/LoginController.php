@@ -54,7 +54,7 @@ class LoginController extends Controller
     }
 
     /**
-     * Tujuan setelah login tergantung kelengkapan onboarding.
+     * Tujuan setelah login tergantung kelengkapan onboarding dan peran.
      */
     private function redirectPath(): string
     {
@@ -66,6 +66,9 @@ class LoginController extends Controller
                 : route('onboarding.role');
         }
 
-        return route('home');
+        // Penjual langsung dibawa ke portal penjual, bukan etalase pembeli.
+        return $user->role === 'seller'
+            ? route('seller.dashboard')
+            : route('home');
     }
 }

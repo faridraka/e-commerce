@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'onboarding.completed' => \App\Http\Middleware\EnsureOnboardingCompleted::class,
             'seller' => \App\Http\Middleware\EnsureSeller::class,
+            'buyer' => \App\Http\Middleware\EnsureBuyer::class,
+            'seller.redirect' => \App\Http\Middleware\RedirectSellerFromStorefront::class,
         ]);
         $middleware->trustProxies(at: "*");
     })

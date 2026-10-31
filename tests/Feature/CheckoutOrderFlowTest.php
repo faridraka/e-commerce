@@ -267,5 +267,30 @@ class CheckoutOrderFlowTest extends TestCase
     {
         return User::factory()->create(['role' => 'buyer', 'onboarding_completed_at' => now()]);
     }
-}
 
+    public function test_seller_cannot_access_buyer_pages(): void
+    {
+        $seller = User::factory()->create([
+            'role' => 'seller',
+            'onboarding_completed_at' => now(),
+        ]);
+        \App\Models\Store::factory()->create([
+            'user_id' => $seller->id,
+            'verified_at' => now(),
+        ]);
+
+        $this->actingAs($seller)->get(route('home'))->assertRedirect(route('seller.dashboard'));
+        $this->actingAs($seller)->get(route('products.index'))->assertRedirect(route('seller.dashboard'));
+        $this->actingAs($seller)->get(route('cart.index'))->assertRedirect(route('seller.dashboard'));
+        $this->actingAs($seller)->get(route('checkout.index'))->assertRedirect(route('seller.dashboard'));
+        $this->actingAs($seller)->get(route('orders.index'))->assertRedirect(route('seller.dashboard'));
+    }
+
+    public function test_buyer_cannot_access_seller_pages(): void
+    {
+        $user = $this->buyer();
+
+        $this->actingAs($user)->get(route('seller.dashboard'))->assertForbidden();
+        $this->actingAs($user)->get(route('seller.pos'))->assertForbidden();
+    }
+}

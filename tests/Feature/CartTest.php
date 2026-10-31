@@ -12,6 +12,11 @@ class CartTest extends TestCase
 {
     use RefreshDatabase;
 
+    private function buyer(): User
+    {
+        return User::factory()->buyer()->create();
+    }
+
     public function test_guest_cannot_add_to_cart_via_endpoint(): void
     {
         $product = Product::factory()->create();
@@ -24,7 +29,7 @@ class CartTest extends TestCase
 
     public function test_authenticated_user_can_add_product_to_cart(): void
     {
-        $user = User::factory()->create();
+        $user = $this->buyer();
         $product = Product::factory()->create(['stock' => 10]);
 
         $response = $this->actingAs($user)
@@ -40,7 +45,7 @@ class CartTest extends TestCase
 
     public function test_adding_same_product_increases_quantity(): void
     {
-        $user = User::factory()->create();
+        $user = $this->buyer();
         $product = Product::factory()->create(['stock' => 10]);
 
         $this->actingAs($user)->postJson(route('cart.store', $product));
@@ -52,7 +57,7 @@ class CartTest extends TestCase
 
     public function test_quantity_is_capped_at_available_stock(): void
     {
-        $user = User::factory()->create();
+        $user = $this->buyer();
         $product = Product::factory()->create(['stock' => 3]);
 
         $this->actingAs($user)->postJson(route('cart.store', $product), ['quantity' => 99]);
@@ -63,7 +68,7 @@ class CartTest extends TestCase
 
     public function test_out_of_stock_product_cannot_be_added(): void
     {
-        $user = User::factory()->create();
+        $user = $this->buyer();
         $product = Product::factory()->create(['stock' => 0]);
 
         $this->actingAs($user)

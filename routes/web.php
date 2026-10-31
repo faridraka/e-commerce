@@ -14,11 +14,15 @@ use App\Http\Controllers\ProductController;
 use App\Http\Middleware\EnsureOnboardingCompleted;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [HomeController::class, 'index'])->name('home')->middleware(EnsureOnboardingCompleted::class);
+Route::get('/', [HomeController::class, 'index'])
+    ->name('home')
+    ->middleware([EnsureOnboardingCompleted::class, 'seller.redirect']);
 
-// Katalog & detail produk (publik)
-Route::get('products', [ProductController::class, 'index'])->name('products.index');
-Route::get('products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+// Katalog & detail produk (publik; penjual login dialihkan ke dasbor)
+Route::middleware('seller.redirect')->group(function () {
+    Route::get('products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+});
 
 // Halaman untuk tamu (belum login)
 Route::middleware('guest')->group(function () {
@@ -44,13 +48,13 @@ Route::middleware('auth')->group(function () {
     Route::post('onboarding/verification/skip', [OnboardingController::class, 'skip'])->name('onboarding.verification.skip');
 });
 
-// Tambah produk ke keranjang (khusus user login; tamu diarahkan ke halaman daftar)
+// Tambah produk ke keranjang (khusus pembeli login; tamu diarahkan ke halaman daftar)
 Route::post('cart/{product}', [CartController::class, 'store'])
-    ->middleware('auth')
+    ->middleware(['auth', 'buyer'])
     ->name('cart.store');
 
-// Area pembeli (wajib login + onboarding selesai)
-Route::middleware(['auth', 'onboarding.completed'])->group(function () {
+// Area pembeli (wajib login + onboarding selesai + peran buyer)
+Route::middleware(['auth', 'onboarding.completed', 'buyer'])->group(function () {
     // Cart
     Route::get('cart', [CartController::class, 'index'])->name('cart.index');
     Route::patch('cart/items/{cartItem}', [CartController::class, 'updateItem'])->name('cart.update');
