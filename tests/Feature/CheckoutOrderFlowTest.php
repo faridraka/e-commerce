@@ -239,6 +239,64 @@ class CheckoutOrderFlowTest extends TestCase
         $this->assertSame(Order::STATUS_KEDALUWARSA, $order->fresh()->status);
     }
 
+    public function test_payment_finish_redirects_by_transaction_status(): void
+    {
+        $user = $this->buyer();
+        $order = Order::create([
+            'order_code' => 'ORD-20261030-0007',
+            'user_id' => $user->id,
+            'channel' => 'online',
+            'status' => Order::STATUS_MENUNGGU_PEMBAYARAN,
+            'total_amount' => 50000,
+        ]);
+        $order->payments()->create([
+            'method' => 'virtual',
+            'provider' => 'midtrans',
+            'provider_order_id' => 'ORD-20261030-0007-1',
+            'status' => Payment::STATUS_PENDING,
+            'amount' => 50000,
+        ]);
+
+        // Settlement: kembali ke halaman pembayaran dengan pesan sukses.
+        $this->actingAs($user)
+            ->get(route('payment.finish', ['order_id' => 'ORD-20261030-0007-1', 'transaction_status' => 'settlement']))
+            ->assertRedirect(route('payment.show', $order->order_code));
+
+        // Pending: tetap ke halaman pembayaran dengan pesan menunggu.
+        $this->actingAs($user)
+            ->get(route('payment.finish', ['order_id' => 'ORD-20261030-0007-1', 'transaction_status' => 'pending']))
+            ->assertRedirect(route('payment.show', $order->order_code));
+
+        // Status lain (error/close): ke halaman detail order.
+        $this->actingAs($user)
+            ->get(route('payment.finish', ['order_id' => 'ORD-20261030-0007-1', 'transaction_status' => 'error']))
+            ->assertRedirect(route('orders.show', $order->order_code));
+    }
+
+    public function test_payment_finish_is_hidden_from_other_users(): void
+    {
+        $owner = $this->buyer();
+        $stranger = $this->buyer();
+        $order = Order::create([
+            'order_code' => 'ORD-20261030-0008',
+            'user_id' => $owner->id,
+            'channel' => 'online',
+            'status' => Order::STATUS_MENUNGGU_PEMBAYARAN,
+            'total_amount' => 50000,
+        ]);
+        $order->payments()->create([
+            'method' => 'virtual',
+            'provider' => 'midtrans',
+            'provider_order_id' => 'ORD-20261030-0008-1',
+            'status' => Payment::STATUS_PENDING,
+            'amount' => 50000,
+        ]);
+
+        $this->actingAs($stranger)
+            ->get(route('payment.finish', ['order_id' => 'ORD-20261030-0008-1', 'transaction_status' => 'settlement']))
+            ->assertNotFound();
+    }
+
     public function test_profile_can_be_updated(): void
     {
         $user = $this->buyer();

@@ -66,6 +66,7 @@ Route::middleware(['auth', 'onboarding.completed'])->group(function () {
     Route::get('orders/{order:order_code}', [OrderController::class, 'show'])->name('orders.show');
     Route::get('orders/{order:order_code}/payment', [PaymentController::class, 'show'])->name('payment.show');
     Route::post('orders/{order:order_code}/payment/token', [PaymentController::class, 'snapToken'])->name('payment.token');
+    Route::get('payment/finish', [PaymentController::class, 'finish'])->name('payment.finish');
 
     // Profile
     Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');

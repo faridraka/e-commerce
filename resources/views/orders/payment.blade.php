@@ -169,7 +169,23 @@
                     return;
                 }
             }
-            window.snap.pay(token);
+            window.snap.pay(token, {
+                // Callback Snap.js: tutup popup lalu kembali ke halaman order.
+                // Status resmi tetap diverifikasi via webhook Midtrans.
+                onSuccess: function (result) {
+                    window.location.href = '{{ route('payment.finish') }}?order_id=' + encodeURIComponent(result.order_id ?? '') + '&transaction_status=settlement';
+                },
+                onPending: function (result) {
+                    window.location.href = '{{ route('payment.finish') }}?order_id=' + encodeURIComponent(result.order_id ?? '') + '&transaction_status=pending';
+                },
+                onError: function (result) {
+                    window.location.href = '{{ route('payment.finish') }}?order_id=' + encodeURIComponent(result.order_id ?? '') + '&transaction_status=error';
+                },
+                onClose: function () {
+                    // Popup ditutup tanpa menyelesaikan pembayaran: halaman tetap,
+                    // user bisa mencoba lagi atau bayar via halaman Midtrans.
+                },
+            });
         });
     }
 </script>

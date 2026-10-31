@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Services\MidtransService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
@@ -45,6 +46,41 @@ class PaymentController extends Controller
             'clientKey' => (string) config('midtrans.client_key'),
             'isProduction' => (bool) config('midtrans.is_production'),
         ]);
+    }
+
+    /**
+     * Redirect balik dari Midtrans Snap setelah user selesai membayar/batal.
+     * Memetakan provider_order_id (order_id Midtrans) ke kode pesanan internal,
+     * lalu mengarahkan ke halaman order pembeli. Notifikasi status resmi tetap
+     * diurus webhook agar tidak bergantung pada browser user.
+     */
+    public function finish(Request $request): RedirectResponse
+    {
+        $orderId = (string) $request->query('order_id', '');
+
+        $payment = Payment::where('provider_order_id', $orderId)->first();
+
+        if (! $payment) {
+            return redirect()->route('orders.index');
+        }
+
+        $order = $payment->order;
+
+        abort_unless($order && $order->user_id === $request->user()->id, 404);
+
+        $transactionStatus = (string) $request->query('transaction_status', '');
+
+        if ($transactionStatus === 'settlement' || $transactionStatus === 'capture') {
+            return redirect()->route('payment.show', $order->order_code)
+                ->with('status', 'Pembayaran berhasil. Menunggu konfirmasi Midtrans.');
+        }
+
+        if ($transactionStatus === 'pending') {
+            return redirect()->route('payment.show', $order->order_code)
+                ->with('status', 'Menunggu pembayaran Anda diselesaikan.');
+        }
+
+        return redirect()->route('orders.show', $order->order_code);
     }
 
     /**
