@@ -27,6 +27,13 @@ class PaymentController extends Controller
         $order->load(['items', 'address', 'payments']);
         $payment = $order->latestPayment();
 
+        // Sinkronkan status ke API Midtrans saat halaman dibuka: memulihkan
+        // order yang notifikasinya gagal/telat tanpa menunggu webhook.
+        if ($payment && $payment->status === Payment::STATUS_PENDING) {
+            $this->midtrans->syncFromMidtrans($payment);
+            $payment->refresh();
+        }
+
         // Buat token Snap saat pertama kali halaman dibuka (bila Midtrans terkonfigurasi).
         if ($this->midtrans->isConfigured() && $payment && $payment->status === Payment::STATUS_PENDING && blank($payment->snap_token)) {
             try {
@@ -134,7 +141,20 @@ class PaymentController extends Controller
         $signatureKey = (string) ($payload['signature_key'] ?? '');
 
         if (! $this->midtrans->verifySignature($orderId, $statusCode, $grossAmount, $signatureKey)) {
-            Log::warning('[midtrans] Signature webhook tidak valid.', ['order_id' => $orderId]);
+            Log::warning('[midtrans] Signature webhook tidak valid.', [
+                'order_id' => $orderId,
+                'status_code' => $statusCode,
+                'gross_amount' => $grossAmount,
+                'key_last6' => substr((string) config('midtrans.server_key'), -6),
+            ]);
+
+            // Fallback otoritatif: daripada membuang notifikasi, tanyakan status
+            // langsung ke API Midtrans (autentikasi server key via HTTPS).
+            $payment = Payment::where('provider_order_id', $orderId)->first();
+
+            if ($payment) {
+                $this->midtrans->syncFromMidtrans($payment);
+            }
 
             return response()->json(['message' => 'Signature tidak valid.'], 403);
         }

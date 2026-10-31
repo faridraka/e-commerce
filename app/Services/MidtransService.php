@@ -76,6 +76,69 @@ class MidtransService
     }
 
     /**
+     * Sinkronkan status payment pending dengan menanyakan langsung ke API Midtrans.
+     * Dipakai sebagai fallback bila webhook gagal/telat, dan untuk memulihkan
+     * order yang notifikasinya sudah lewat batas retry Midtrans.
+     *
+     * @return bool true bila status berhasil diperbarui dari API.
+     */
+    public function syncFromMidtrans(Payment $payment): bool
+    {
+        if (! $this->isConfigured() || $payment->status !== Payment::STATUS_PENDING || blank($payment->provider_order_id)) {
+            return false;
+        }
+
+        try {
+            $this->configure();
+
+            $transaction = \Midtrans\Transaction::status($payment->provider_order_id);
+
+            $status = $this->mapTransactionStatus(
+                (string) $transaction->transaction_status,
+                (string) ($transaction->fraud_status ?? 'accept'),
+            );
+
+            if ($status === $payment->status) {
+                return false;
+            }
+
+            $payment->forceFill([
+                'status' => $status,
+                'payment_type' => $transaction->payment_type ?? $payment->payment_type,
+                'provider_transaction_id' => $transaction->transaction_id ?? $payment->provider_transaction_id,
+                'amount_received' => $status === Payment::STATUS_PAID ? (string) ($transaction->gross_amount ?? $payment->amount) : $payment->amount_received,
+                'paid_at' => $status === Payment::STATUS_PAID ? now() : $payment->paid_at,
+            ])->save();
+
+            $order = $payment->order;
+            $orderStatus = match ($status) {
+                Payment::STATUS_PAID => Order::STATUS_DIBAYAR,
+                Payment::STATUS_EXPIRED => Order::STATUS_KEDALUWARSA,
+                Payment::STATUS_FAILED => Order::STATUS_DIBATALKAN,
+                default => $order->status,
+            };
+
+            if ($order->status === Order::STATUS_MENUNGGU_PEMBAYARAN && $orderStatus !== $order->status) {
+                $order->forceFill(['status' => $orderStatus])->save();
+            }
+
+            $this->logWebhook('Status payment disinkronkan dari API Midtrans', [
+                'order_id' => $payment->provider_order_id,
+                'status' => $status,
+            ]);
+
+            return true;
+        } catch (\Throwable $e) {
+            $this->logWebhook('Gagal sinkron status dari API Midtrans', [
+                'order_id' => $payment->provider_order_id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
      * Terjemahkan transaction_status Midtrans menjadi status payment internal.
      */
     public function mapTransactionStatus(string $transactionStatus, string $fraudStatus): string
