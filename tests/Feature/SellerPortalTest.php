@@ -262,7 +262,7 @@ class SellerPortalTest extends TestCase
         $order = Order::where('channel', 'pos')->first();
         $this->assertNotNull($order);
         $this->assertSame(60000.0, (float) $order->total_amount);
-        $this->assertSame(Order::STATUS_DIBAYAR, $order->status);
+        $this->assertSame(Order::STATUS_SELESAI, $order->status);
 
         $payment = $order->payments()->first();
         $this->assertSame(Payment::STATUS_PAID, $payment->status);

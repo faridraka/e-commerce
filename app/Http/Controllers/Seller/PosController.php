@@ -95,8 +95,9 @@ class PosController extends Controller
                 'user_id' => null,
                 'address_id' => null,
                 'channel' => 'pos',
-                // Tunai dianggap lunas seketika.
-                'status' => Order::STATUS_DIBAYAR,
+                // Transaksi kasir tunai: pembeli walk-in bayar di tempat,
+                // tidak masuk aplikasi buyer, tanpa alamat, langsung selesai.
+                'status' => Order::STATUS_SELESAI,
                 'total_amount' => $total,
                 'customer_name' => $validated['customer_name'] ?? 'Pelanggan Kasir',
             ]);

@@ -50,10 +50,10 @@
                     <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center mb-2 shadow-sm">
                         <span class="material-symbols-outlined text-on-primary text-[22px]">storefront</span>
                     </div>
-                    <span class="font-caption text-caption text-ink-muted uppercase tracking-wider">Struk Pembayaran Resmi</span>
+                    <span class="font-caption text-caption text-ink-muted uppercase tracking-wider">Struk Pembayaran Resmi — Transaksi Kasir Toko</span>
                     <h1 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">{{ $store->name }}</h1>
                     <p class="font-body-md text-body-md text-xs text-on-surface-variant mt-1 leading-snug">
-                        Kode Toko: {{ $store->activation_code }}
+                        Toko: {{ $store->name }} • Kode Toko: {{ $store->activation_code }}
                     </p>
                 </div>
 

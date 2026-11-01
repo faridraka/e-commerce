@@ -32,7 +32,7 @@ class DashboardController extends Controller
             $query->whereHas('items.product', fn ($q) => $q->where('store_id', $store->id));
         };
 
-        $ordersQuery = Order::query()->where($belongsToStore);
+        $ordersQuery = Order::query()->where('channel', 'online')->where($belongsToStore);
 
         // Pendapatan: pesanan pada periode terpilih yang pembayarannya lunas.
         $revenueQuery = (clone $ordersQuery)

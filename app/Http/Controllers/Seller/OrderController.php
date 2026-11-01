@@ -12,6 +12,7 @@ class OrderController extends Controller
 {
     /**
      * Pesanan Online yang memuat produk milik toko penjual.
+     * Transaksi kasir POS (channel=pos) tidak masuk ke sini.
      */
     public function index(Request $request): View
     {
@@ -19,6 +20,7 @@ class OrderController extends Controller
 
         $orders = Order::query()
             ->with(['items', 'address', 'payments'])
+            ->where('channel', 'online')
             ->whereHas('items.product', fn ($q) => $q->where('store_id', $store->id))
             ->latest()
             ->paginate(10)
@@ -38,7 +40,8 @@ class OrderController extends Controller
         $store = $request->user()->store;
 
         abort_unless(
-            $order->items()->whereHas('product', fn ($q) => $q->where('store_id', $store->id))->exists(),
+            $order->channel === 'online'
+                && $order->items()->whereHas('product', fn ($q) => $q->where('store_id', $store->id))->exists(),
             404
         );
 
@@ -60,7 +63,8 @@ class OrderController extends Controller
         $store = $request->user()->store;
 
         abort_unless(
-            $order->items()->whereHas('product', fn ($q) => $q->where('store_id', $store->id))->exists(),
+            $order->channel === 'online'
+                && $order->items()->whereHas('product', fn ($q) => $q->where('store_id', $store->id))->exists(),
             404
         );
 

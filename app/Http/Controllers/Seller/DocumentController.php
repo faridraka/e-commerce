@@ -49,6 +49,7 @@ class DocumentController extends Controller
      */
     private function belongsToStore(Order $order, int $storeId): bool
     {
-        return $order->items()->whereHas('product', fn ($q) => $q->where('store_id', $storeId))->exists();
+        return $order->channel === 'online'
+            && $order->items()->whereHas('product', fn ($q) => $q->where('store_id', $storeId))->exists();
     }
 }
