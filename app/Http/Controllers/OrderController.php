@@ -33,4 +33,16 @@ class OrderController extends Controller
 
         return view('orders.show', compact('order'));
     }
+
+    /**
+     * Invoice digital pembeli: format faktur cetak dengan rincian item dan status.
+     */
+    public function invoice(Request $request, Order $order): View
+    {
+        abort_unless($order->user_id === $request->user()->id, 404);
+
+        $order->load(['items.product', 'address', 'payments']);
+
+        return view('orders.invoice', compact('order'));
+    }
 }

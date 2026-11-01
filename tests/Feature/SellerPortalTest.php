@@ -371,4 +371,35 @@ class SellerPortalTest extends TestCase
 
         $this->actingAs($other)->get(route('seller.orders.show', $order->order_code))->assertNotFound();
     }
+
+    public function test_seller_can_print_invoice_and_label(): void
+    {
+        $seller = $this->seller();
+        $product = Product::factory()->create(['store_id' => $seller->store->id]);
+
+        $order = Order::create([
+            'order_code' => 'ORD-20261031-0902',
+            'user_id' => null,
+            'channel' => 'online',
+            'status' => Order::STATUS_DIBAYAR,
+            'total_amount' => 65000,
+        ]);
+        $order->items()->create([
+            'product_id' => $product->id,
+            'product_name' => $product->name,
+            'price' => $product->price,
+            'quantity' => 1,
+            'subtotal' => $product->price,
+        ]);
+
+        $this->actingAs($seller)->get(route('seller.orders.invoice', $order->order_code))
+            ->assertOk()
+            ->assertSee('INVOICE')
+            ->assertSee($order->order_code);
+
+        $this->actingAs($seller)->get(route('seller.orders.label', $order->order_code))
+            ->assertOk()
+            ->assertSee('Label Pengiriman')
+            ->assertSee($order->order_code);
+    }
 }

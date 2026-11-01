@@ -116,10 +116,10 @@
             </div>
             <!-- Action buttons depending on state -->
             <div class="flex items-center flex-wrap gap-2.5" id="header-quick-actions">
-                <button class="h-11 px-5 rounded-full bg-surface-container-low text-on-surface hover:bg-surface-container transition-colors inline-flex items-center gap-2 text-caption font-caption font-bold" type="button">
+                <a class="h-11 px-5 rounded-full bg-surface-container-low text-on-surface hover:bg-surface-container transition-colors inline-flex items-center gap-2 text-caption font-caption font-bold" href="{{ route('orders.invoice', $order->order_code) }}" target="_blank">
                     <span class="material-symbols-outlined text-[18px]">receipt_long</span>
                     <span>Invoice Digital</span>
-                </button>
+                </a>
                 @if ($order->status === 'menunggu_pembayaran')
                     <a class="h-11 px-6 rounded-full bg-primary-container text-on-primary hover:bg-blue-hover transition shadow-sm font-body-md text-body-md font-bold inline-flex items-center justify-center gap-2" href="{{ route('payment.show', $order->order_code) }}">
                         <span class="material-symbols-outlined text-[18px]">qr_code_2</span>
@@ -445,10 +445,10 @@
                         </div>
                     </div>
                     <!-- Secondary Download Invoice Button -->
-                    <button class="w-full h-11 rounded-full bg-surface text-primary hover:bg-blue-subtle transition font-body-md text-body-md font-bold inline-flex items-center justify-center gap-2 shadow-sm" type="button">
+                    <a class="w-full h-11 rounded-full bg-surface text-primary hover:bg-blue-subtle transition font-body-md text-body-md font-bold inline-flex items-center justify-center gap-2 shadow-sm" href="{{ route('orders.invoice', $order->order_code) }}" target="_blank">
                         <span class="material-symbols-outlined text-[18px]">download</span>
                         <span>Unduh Bukti Pembayaran (Invoice)</span>
-                    </button>
+                    </a>
                 </article>
                 <!-- Card 3: Bantuan &amp; Kendala -->
                 <article class="bg-surface-card rounded-xl p-5 sm:p-6 shadow-sm flex flex-col gap-4">

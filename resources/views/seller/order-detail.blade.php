@@ -136,14 +136,14 @@
 </div>
 <!-- Quick Action Toolbar -->
 <div class="flex flex-wrap items-center gap-space-sm">
-<button class="h-[44px] px-4 rounded-full border border-border-default bg-surface-card hover:bg-surface-container-high text-on-surface font-body-md text-body-md font-medium transition-colors inline-flex items-center gap-2 shadow-sm" onclick="window.print()">
+<a class="h-[44px] px-4 rounded-full border border-border-default bg-surface-card hover:bg-surface-container-high text-on-surface font-body-md text-body-md font-medium transition-colors inline-flex items-center gap-2 shadow-sm" href="{{ route('seller.orders.label', $order->order_code) }}" target="_blank">
 <span class="material-symbols-outlined text-[18px]">local_shipping</span>
 <span class="">Cetak Label</span>
-</button>
-<button class="h-[44px] px-4 rounded-full border border-border-default bg-surface-card hover:bg-surface-container-high text-on-surface font-body-md text-body-md font-medium transition-colors inline-flex items-center gap-2 shadow-sm" onclick="window.print()">
+</a>
+<a class="h-[44px] px-4 rounded-full border border-border-default bg-surface-card hover:bg-surface-container-high text-on-surface font-body-md text-body-md font-medium transition-colors inline-flex items-center gap-2 shadow-sm" href="{{ route('seller.orders.invoice', $order->order_code) }}" target="_blank">
 <span class="material-symbols-outlined text-[18px]">receipt_long</span>
 <span class="">Cetak Invoice</span>
-</button>
+</a>
 @if ($canCancel)
 <button class="h-[44px] px-4 rounded-full border border-secondary text-secondary hover:bg-error-container/20 font-body-md text-body-md font-bold transition-colors inline-flex items-center gap-1.5" id="btn-cancel-order" onclick="openCancelModal()">
 <span class="material-symbols-outlined text-[18px]">cancel</span>

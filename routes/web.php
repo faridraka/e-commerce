@@ -68,6 +68,7 @@ Route::middleware(['auth', 'onboarding.completed', 'buyer'])->group(function () 
     // Orders
     Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{order:order_code}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('orders/{order:order_code}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
     Route::get('orders/{order:order_code}/payment', [PaymentController::class, 'show'])->name('payment.show');
     Route::post('orders/{order:order_code}/payment/confirm', [PaymentController::class, 'confirm'])->name('payment.confirm');
 
@@ -86,6 +87,7 @@ Route::middleware(['auth', 'onboarding.completed', 'buyer'])->group(function () 
 // Portal Penjual & Kasir POS (wajib seller dengan toko terverifikasi)
 use App\Http\Controllers\Seller\CategoryController as SellerCategoryController;
 use App\Http\Controllers\Seller\DashboardController;
+use App\Http\Controllers\Seller\DocumentController as SellerDocumentController;
 use App\Http\Controllers\Seller\OrderController as SellerOrderController;
 use App\Http\Controllers\Seller\PosController;
 use App\Http\Controllers\Seller\ProductController as SellerProductController;
@@ -115,6 +117,8 @@ Route::prefix('seller')->middleware(['auth', 'onboarding.completed', 'seller'])-
     // Online orders
     Route::get('orders', [SellerOrderController::class, 'index'])->name('seller.orders');
     Route::get('orders/{order:order_code}', [SellerOrderController::class, 'show'])->name('seller.orders.show');
+    Route::get('orders/{order:order_code}/invoice', [SellerDocumentController::class, 'invoice'])->name('seller.orders.invoice');
+    Route::get('orders/{order:order_code}/label', [SellerDocumentController::class, 'label'])->name('seller.orders.label');
     Route::post('orders/{order:order_code}/status', [SellerOrderController::class, 'updateStatus'])->name('seller.orders.status');
 
     // POS terminal
@@ -166,5 +170,8 @@ Route::patch('seller/produk/{slug}/toggle', fn (string $slug) => redirect()->to(
 Route::delete('seller/produk/{slug}', fn (string $slug) => redirect()->to("/seller/products/{$slug}", 307));
 Route::post('seller/stok', fn () => redirect()->to('/seller/stock', 307));
 Route::get('seller/pesanan/{orderCode}', fn (string $orderCode) => redirect()->to("/seller/orders/{$orderCode}", 301));
+Route::get('pesanan/{orderCode}/invoice', fn (string $orderCode) => redirect()->to("/orders/{$orderCode}/invoice", 301));
+Route::get('seller/pesanan/{orderCode}/invoice', fn (string $orderCode) => redirect()->to("/seller/orders/{$orderCode}/invoice", 301));
+Route::get('seller/pesanan/{orderCode}/label', fn (string $orderCode) => redirect()->to("/seller/orders/{$orderCode}/label", 301));
 Route::post('seller/pesanan/{orderCode}/status', fn (string $orderCode) => redirect()->to("/seller/orders/{$orderCode}/status", 307));
 Route::get('seller/pos/{orderCode}/struk', fn (string $orderCode) => redirect()->to("/seller/pos/{$orderCode}/receipt", 301));

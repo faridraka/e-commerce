@@ -373,8 +373,7 @@
     }
     document.getElementById('barcode-search-input').addEventListener('input', () => applyCatalogFilter());
 
-    // ===== Modal tunai =====
-    function openCashModal() {
+    // ===== Keranjang kasir =====
     function getProductCard(id) {
         return document.querySelector('#catalog-grid article[data-product-id="' + id + '"]');
     }
