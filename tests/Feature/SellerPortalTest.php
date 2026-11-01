@@ -96,6 +96,33 @@ class SellerPortalTest extends TestCase
         $this->assertDatabaseHas('categories', ['id' => $category->id]);
     }
 
+    public function test_seller_can_store_new_product(): void
+    {
+        $seller = $this->seller();
+        $category = Category::factory()->create();
+
+        $this->actingAs($seller)->post(route('seller.products.store'), [
+            'name' => 'Kopi Toraja 250g',
+            'category_id' => $category->id,
+            'price' => 85000,
+            'original_price' => 100000,
+            'stock' => 20,
+            'description' => 'Kopi arabika single origin dari Toraja.',
+            'image' => 'https://example.com/kopi-toraja.jpg',
+            'origin' => 'Toraja, Sulawesi Selatan',
+        ])->assertRedirect(route('seller.products'));
+
+        $product = Product::where('name', 'Kopi Toraja 250g')->first();
+        $this->assertNotNull($product);
+        $this->assertSame($seller->store->id, $product->store_id);
+        $this->assertSame(20, $product->stock);
+        $this->assertTrue($product->is_active);
+
+        // Stok awal tercatat sebagai penyesuaian masuk.
+        $this->assertSame(1, $product->movements()->count());
+        $this->assertSame(20, $product->movements()->first()->quantity);
+    }
+
     public function test_seller_sees_only_own_store_products(): void
     {
         $seller = $this->seller();
