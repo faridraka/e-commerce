@@ -431,26 +431,26 @@
 
         cart.forEach(item => {
             const row = document.createElement('div');
-            row.className = 'flex items-center justify-between p-space-xs bg-surface-container-lowest rounded-lg shadow-sm gap-2';
+            row.className = 'flex items-center gap-2 p-2 bg-surface-container-lowest rounded-lg shadow-sm';
             row.innerHTML = `
                 <div class="flex-1 min-w-0">
-                    <p class="font-body-md text-body-md text-on-surface font-bold truncate">${esc(item.name)}</p>
-                    <p class="font-code-mono text-[12px] text-ink-muted">@ ${rupiah(item.price)}</p>
+                    <p class="text-[13px] font-bold text-on-surface truncate leading-tight">${esc(item.name)}</p>
+                    <p class="font-code-mono text-[11px] text-ink-muted leading-tight">@ ${rupiah(item.price)}</p>
                 </div>
-                <div class="flex items-center bg-surface-container rounded-full p-0.5">
-                    <button aria-label="Kurangi kuantitas" class="w-11 h-11 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container-highest active:scale-95 transition-transform" onclick="updateQty(${item.id}, -1)">
-                        <span class="material-symbols-outlined text-[18px]">remove</span>
+                <div class="flex items-center gap-0.5 bg-surface-container rounded-full p-0.5 shrink-0">
+                    <button aria-label="Kurangi kuantitas" class="w-7 h-7 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container-highest active:scale-95 transition-transform" onclick="updateQty(${item.id}, -1)">
+                        <span class="material-symbols-outlined text-[16px]">remove</span>
                     </button>
-                    <span class="font-code-mono text-body-md font-bold px-2 w-7 text-center" data-qty>${item.qty}</span>
-                    <button aria-label="Tambah kuantitas" class="w-11 h-11 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container-highest active:scale-95 transition-transform" onclick="updateQty(${item.id}, 1)">
-                        <span class="material-symbols-outlined text-[18px]">add</span>
+                    <span class="font-code-mono text-[13px] font-bold min-w-6 text-center" data-qty>${item.qty}</span>
+                    <button aria-label="Tambah kuantitas" class="w-7 h-7 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container-highest active:scale-95 transition-transform" onclick="updateQty(${item.id}, 1)">
+                        <span class="material-symbols-outlined text-[16px]">add</span>
                     </button>
                 </div>
-                <div class="text-right min-w-[76px]">
-                    <p class="font-code-mono text-price-sm text-on-surface font-bold" data-line-total>${rupiah(item.qty * item.price)}</p>
+                <div class="text-right min-w-[72px] shrink-0">
+                    <p class="font-code-mono text-[13px] text-on-surface font-bold leading-tight" data-line-total>${rupiah(item.qty * item.price)}</p>
                 </div>
-                <button class="w-9 h-9 rounded-full flex items-center justify-center text-ink-muted hover:text-error hover:bg-error-container/40 transition-colors" title="Hapus Item" onclick="deleteItem(${item.id})">
-                    <span class="material-symbols-outlined text-[18px]">delete_outline</span>
+                <button class="w-7 h-7 rounded-full flex items-center justify-center text-ink-muted hover:text-error hover:bg-error-container/40 transition-colors shrink-0" title="Hapus Item" onclick="deleteItem(${item.id})">
+                    <span class="material-symbols-outlined text-[16px]">delete_outline</span>
                 </button>`;
             container.appendChild(row);
         });
