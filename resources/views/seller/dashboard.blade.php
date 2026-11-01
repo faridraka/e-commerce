@@ -2,8 +2,6 @@
 
 @section('title', 'Dasbor Penjual - Lokalku')
 
-@section('breadcrumb', 'Dasbor')
-
 @php
     $posOrderCount = $recentOrders->filter(fn ($o) => $o->channel === 'pos')->count();
     $onlineOrderCount = $recentOrders->count() - $posOrderCount;

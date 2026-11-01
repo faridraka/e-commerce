@@ -2,8 +2,6 @@
 
 @section('title', 'Manajemen Kategori - Portal Penjual Lokalku')
 
-@section('breadcrumb', 'Manajemen Kategori')
-
 @section('content')
 <div class="flex flex-col w-full">
     @if ($errors->has('category'))
