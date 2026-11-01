@@ -221,10 +221,13 @@
                                         <p class="font-caption text-caption text-ink-muted">Konfirmasi hanya setelah barang fisik Anda terima dan periksa dengan baik.</p>
                                     </div>
                                 </div>
-                                <a class="h-11 px-6 rounded-full bg-primary-container text-on-primary hover:bg-blue-hover transition shadow-sm font-body-md text-body-md font-bold flex-shrink-0 flex items-center justify-center gap-2" href="{{ route('products.index') }}">
-                                    <span class="material-symbols-outlined text-[18px]">verified</span>
-                                    <span>Lanjut Belanja</span>
-                                </a>
+                                <form action="{{ route('orders.complete', $order->order_code) }}" method="POST" class="flex-shrink-0">
+                                    @csrf
+                                    <button class="h-11 px-6 rounded-full bg-primary-container text-on-primary hover:bg-blue-hover transition shadow-sm font-body-md text-body-md font-bold flex items-center justify-center gap-2" type="submit">
+                                        <span class="material-symbols-outlined text-[18px]">verified</span>
+                                        <span>Pesanan Diterima</span>
+                                    </button>
+                                </form>
                             </div>
                         @elseif ($order->status === 'menunggu_pembayaran')
                             <!-- Box for "Menunggu Pembayaran" -->

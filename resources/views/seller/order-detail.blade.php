@@ -242,15 +242,11 @@
 <div class="w-10 h-10 rounded-full bg-tertiary text-on-tertiary flex items-center justify-center flex-shrink-0" id="action-box-icon"><span class="material-symbols-outlined text-[22px]">route</span></div>
 <div>
 <h3 class="font-headline-sm text-body-md font-bold text-on-surface" id="action-box-title">Paket Sedang Dalam Pengantaran</h3>
-<p class="font-body-md text-caption text-on-surface-variant" id="action-box-desc">Pesanan akan otomatis selesai saat pembeli konfirmasi, atau tandai selesai secara manual.</p>
+<p class="font-body-md text-caption text-on-surface-variant" id="action-box-desc">Pesanan menunggu konfirmasi penerimaan dari pembeli. Tombol selesai hanya tampil di sisi pembeli.</p>
 </div>
 </div>
 <div class="flex items-center gap-2 flex-shrink-0">
-<form action="{{ route('seller.orders.status', $order->order_code) }}" method="POST">
-@csrf
-<input name="status" type="hidden" value="selesai">
-<button class="h-[44px] px-6 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-body-md text-body-md font-bold transition-all border border-border-default flex items-center gap-2" id="primary-workflow-btn" type="submit"><span class="material-symbols-outlined text-[18px] text-tertiary">check_circle</span><span class="">Tandai Selesai</span></button>
-</form>
+<span class="h-[44px] px-6 rounded-full bg-surface-container text-ink-muted font-body-md text-body-md font-medium border border-border-default flex items-center gap-2" id="primary-workflow-btn"><span class="material-symbols-outlined text-[18px]">hourglass_empty</span><span class="">Menunggu Pembeli</span></span>
 </div>
 </div>
 @elseif ($order->status === 'selesai')

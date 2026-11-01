@@ -68,6 +68,7 @@ Route::middleware(['auth', 'onboarding.completed', 'buyer'])->group(function () 
     // Orders
     Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{order:order_code}', [OrderController::class, 'show'])->name('orders.show');
+    Route::post('orders/{order:order_code}/complete', [OrderController::class, 'complete'])->name('orders.complete');
     Route::get('orders/{order:order_code}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
     Route::get('orders/{order:order_code}/payment', [PaymentController::class, 'show'])->name('payment.show');
     Route::post('orders/{order:order_code}/payment/confirm', [PaymentController::class, 'confirm'])->name('payment.confirm');

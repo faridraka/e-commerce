@@ -51,7 +51,9 @@ class OrderController extends Controller
     }
 
     /**
-     * Perbarui status pesanan: diproses → dikirim → selesai.
+     * Perbarui status pesanan: diproses → dikirim.
+     * Penyelesaian pesanan (selesai) hanya bisa dilakukan pembeli
+     * lewat halaman detail pesanannya sendiri.
      */
     public function updateStatus(Request $request, Order $order): RedirectResponse
     {
@@ -63,7 +65,7 @@ class OrderController extends Controller
         );
 
         $validated = $request->validate([
-            'status' => ['required', 'in:' . Order::STATUS_DIPROSES . ',' . Order::STATUS_DIKIRIM . ',' . Order::STATUS_SELESAI],
+            'status' => ['required', 'in:' . Order::STATUS_DIPROSES . ',' . Order::STATUS_DIKIRIM],
             'tracking_number' => ['nullable', 'string', 'max:100'],
         ]);
 

@@ -68,11 +68,11 @@
                     @foreach ($products as $product)
                         @if ($product->stock > 0)
                             <!-- In Stock -->
-                            <article class="group cursor-pointer bg-surface-card rounded-lg p-space-xs flex flex-col justify-between shadow-sm hover:shadow-md hover:bg-blue-subtle/30 transition-all select-none relative" data-category="{{ $product->category?->name }}" data-name="{{ $product->name }}" data-price="{{ $product->price }}" data-product-id="{{ $product->id }}" data-stock="{{ $product->stock }}" onclick="addToCart({{ $product->id }})">
-                                <div class="w-full aspect-square rounded-DEFAULT overflow-hidden bg-surface-container relative">
-                                    <img alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="{{ $product->image }}">
+                            <article class="group cursor-pointer bg-surface-card rounded-lg p-space-xs flex flex-col justify-between shadow-sm hover:shadow-md hover:bg-blue-subtle/30 transition-all select-none relative h-full" data-category="{{ $product->category?->name }}" data-name="{{ $product->name }}" data-price="{{ $product->price }}" data-product-id="{{ $product->id }}" data-stock="{{ $product->stock }}" onclick="addToCart({{ $product->id }})">
+                                <div class="w-full aspect-square rounded-DEFAULT overflow-hidden bg-surface-container relative shrink-0">
+                                    <img alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" draggable="false" loading="lazy" src="{{ $product->image ?: 'https://placehold.co/400x400/e6f0fb/004da4?text=' . urlencode(mb_substr($product->name, 0, 1)) }}" onerror="this.onerror=null;this.src='https://placehold.co/400x400/e6f0fb/004da4?text=?';">
                                     <span class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full font-caption text-[11px] {{ (int) $product->stock <= 5 ? 'bg-accent-yellow text-on-accent-yellow font-bold' : 'bg-tertiary-fixed text-on-tertiary-fixed font-bold' }}">{{ (int) $product->stock <= 5 ? 'Sisa ' . $product->stock : $product->stock . ' unit' }}</span>
-                                    <span class="absolute bottom-1.5 right-1.5 w-6 h-6 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-bold text-caption shadow hidden" data-qty-badge="{{ $product->id }}">0</span>
+                                    <span class="absolute bottom-1.5 right-1.5 min-w-6 h-6 px-1 rounded-full bg-primary-container text-on-primary hidden items-center justify-center font-bold text-caption shadow pointer-events-none" data-qty-badge="{{ $product->id }}">0</span>
                                 </div>
                                 <div class="p-space-xs flex flex-col gap-0.5">
                                     <h3 class="font-body-md text-body-md text-on-surface font-medium line-clamp-2 leading-snug">{{ $product->name }}</h3>
@@ -121,7 +121,7 @@
                     </div>
 
                     <!-- Alert Banner: Dynamic Stock Limit Warning -->
-                    <div class="hidden flex items-start gap-space-xs p-space-sm bg-error-container text-on-error-container rounded-lg text-caption font-caption animate-pulse" id="stock-alert-banner">
+                    <div class="hidden items-start gap-space-xs p-space-sm bg-error-container text-on-error-container rounded-lg text-caption font-caption" id="stock-alert-banner" role="alert">
                         <span class="material-symbols-outlined text-[18px] text-error flex-shrink-0">warning</span>
                         <span id="stock-alert-text"></span>
                     </div>
@@ -393,13 +393,15 @@
     }
     function showStockAlert(name, stock) {
         const banner = document.getElementById('stock-alert-banner');
-        document.getElementById('stock-alert-text').textContent = '⚠️ Stok ' + name + ' tersisa ' + stock + ' - kuantitas dibatasi ke batas maksimal ketersediaan.';
+        document.getElementById('stock-alert-text').textContent = 'Stok ' + name + ' tersisa ' + stock + ' - kuantitas dibatasi ke batas maksimal ketersediaan.';
         banner.classList.remove('hidden');
-        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        banner.classList.add('flex');
     }
     function hideStockAlert() {
         const banner = document.getElementById('stock-alert-banner');
-        if (banner) banner.classList.add('hidden');
+        if (!banner) return;
+        banner.classList.add('hidden');
+        banner.classList.remove('flex');
     }
     function updateQty(id, delta) {
         const item = cart.get(id) ?? cart.get(Number(id));
@@ -459,8 +461,10 @@
             if (!badge) return;
             const item = cart.get(card.dataset.productId) || cart.get(Number(card.dataset.productId));
             const qty = item ? item.qty : 0;
-            badge.textContent = qty;
-            badge.classList.toggle('hidden', qty === 0);
+            badge.textContent = qty > 99 ? '99+' : qty;
+            const visible = qty > 0;
+            badge.classList.toggle('hidden', !visible);
+            badge.classList.toggle('flex', visible);
         });
 
         const { kinds, pieces, total } = cartTotals();
