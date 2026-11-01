@@ -319,6 +319,7 @@
     const cart = new Map(); // product_id -> { id, name, price, stock, qty }
     let cashReceived = 0;
     let cashTotal = 0;
+    let selectedChip = null;
 
     const rupiah = (n) => 'Rp ' + Math.round(n).toLocaleString('id-ID');
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -484,6 +485,7 @@
         const { kinds, pieces, total } = cartTotals();
         cashTotal = total;
         cashReceived = 0;
+        selectedChip = null;
         document.getElementById('cash-input-field').value = '';
         document.getElementById('cash-cart-summary').textContent = pieces + ' barang';
         document.getElementById('cash-bill-items').textContent = kinds + ' Item Belanjaan · Termasuk PPN Toko';
@@ -498,12 +500,16 @@
     function renderCashChips() {
         const wrap = document.getElementById('cash-chips');
         wrap.innerHTML = '';
+        selectedChip = null;
         if (cashTotal <= 0) return;
-        const pasClass = 'chip-item px-space-md py-1.5 rounded-full text-caption font-code-mono font-bold transition-all bg-primary-container text-on-primary-container shadow-sm';
-        const normalClass = 'chip-item px-space-md py-1.5 rounded-full text-caption font-code-mono font-bold transition-all bg-surface-container hover:bg-surface-container-high text-on-surface shadow-sm';
+        const baseClass = 'chip-item px-space-md py-1.5 rounded-full text-caption font-code-mono font-bold transition-all shadow-sm border-2';
+        const pasClass = baseClass + ' bg-primary-container text-on-primary border-primary-container';
+        const normalClass = baseClass + ' bg-surface-container hover:bg-surface-container-high text-on-surface border-transparent';
         const steps = [cashTotal, Math.ceil(cashTotal / 5000) * 5000, Math.ceil(cashTotal / 10000) * 10000, Math.ceil(cashTotal / 50000) * 50000, Math.ceil(cashTotal / 100000) * 100000];
         [...new Set(steps)].forEach((amount, i) => {
             const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.dataset.amount = String(amount);
             btn.className = i === 0 ? pasClass : normalClass;
             btn.textContent = i === 0 ? 'Uang Pas (' + rupiah(amount) + ')' : rupiah(amount);
             btn.onclick = () => applyPresetChip(amount);
@@ -511,6 +517,7 @@
         });
     }
     function applyPresetChip(amount) {
+        selectedChip = Number(amount);
         const input = document.getElementById('cash-input-field');
         input.value = amount;
         handleCashInput(input.value);
@@ -550,6 +557,16 @@
     }
     function handleCashInput(value) {
         cashReceived = parseFloat(value) || 0;
+        if (selectedChip !== null && cashReceived !== selectedChip) {
+            selectedChip = null;
+        }
+        document.querySelectorAll('#cash-chips .chip-item').forEach(btn => {
+            const isActive = selectedChip !== null && Number(btn.dataset.amount) === selectedChip;
+            btn.className = 'chip-item px-space-md py-1.5 rounded-full text-caption font-code-mono font-bold transition-all shadow-sm border-2'
+                + (isActive
+                    ? ' bg-primary text-white border-primary ring-2 ring-primary/40'
+                    : ' bg-surface-container hover:bg-surface-container-high text-on-surface border-transparent');
+        });
         recalcCash();
     }
     async function confirmCashPayment() {
