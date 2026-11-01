@@ -72,7 +72,8 @@
             <div class="font-display text-headline-lg font-bold text-on-surface tracking-tight">Rp {{ number_format((float) $stats['revenue'], 0, ',', '.') }}</div>
             <div class="mt-space-xs font-caption text-caption text-ink-muted">{{ $stats['period_label'] }}</div>
             <div class="mt-space-md pt-space-xs flex items-center justify-between font-caption text-caption text-ink-muted">
-                <span>Pos pembayaran lunas</span>
+                <span>Online Rp {{ number_format((float) $stats['online_revenue'], 0, ',', '.') }}</span>
+                <span>POS Rp {{ number_format((float) $stats['pos_revenue'], 0, ',', '.') }}</span>
             </div>
             <div class="mt-space-md pt-space-xs">
                 <a class="inline-flex items-center gap-1 font-body-md text-caption font-bold text-primary-container hover:text-blue-hover" href="{{ route('seller.pos.history') }}">
@@ -90,7 +91,7 @@
                 </div>
             </div>
             <div class="font-display text-headline-lg font-bold text-on-surface tracking-tight font-code-mono">{{ (int) $stats['orders_count'] }}</div>
-            <div class="mt-space-xs font-caption text-caption text-ink-muted">{{ $stats['period_label'] }}</div>
+            <div class="mt-space-xs font-caption text-caption text-ink-muted">{{ $stats['period_label'] }} • Online {{ (int) $stats['online_orders_count'] }} / Walk-in POS {{ (int) $stats['pos_orders_count'] }}</div>
             <div class="mt-space-md pt-space-xs">
                 <a class="inline-flex items-center gap-1 font-body-md text-caption font-bold text-primary-container hover:text-blue-hover" href="{{ route('seller.orders') }}">
                     <span>Buka Pesanan</span>

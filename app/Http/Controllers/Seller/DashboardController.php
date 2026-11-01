@@ -32,26 +32,34 @@ class DashboardController extends Controller
             $query->whereHas('items.product', fn ($q) => $q->where('store_id', $store->id));
         };
 
-        $ordersQuery = Order::query()->where('channel', 'online')->where($belongsToStore);
+        $allOrdersQuery = Order::query()->where($belongsToStore);
+        $onlineOrdersQuery = (clone $allOrdersQuery)->where('channel', 'online');
+        $posOrdersQuery = (clone $allOrdersQuery)->where('channel', 'pos');
 
-        // Pendapatan: pesanan pada periode terpilih yang pembayarannya lunas.
-        $revenueQuery = (clone $ordersQuery)
+        // Pendapatan: pesanan pada periode terpilih yang pembayarannya lunas
+        // (online + kasir walk-in POS).
+        $paidInPeriod = fn ($query) => (clone $query)
             ->whereHas('payments', fn ($p) => $p->where('status', 'paid'))
             ->where('created_at', '>=', $start);
 
         $stats = [
             'period_label' => $label,
-            'revenue' => (clone $revenueQuery)->sum('total_amount'),
-            'orders_count' => (clone $ordersQuery)->where('created_at', '>=', $start)->count(),
+            'revenue' => (clone $paidInPeriod($allOrdersQuery))->sum('total_amount'),
+            'online_revenue' => (clone $paidInPeriod($onlineOrdersQuery))->sum('total_amount'),
+            'pos_revenue' => (clone $paidInPeriod($posOrdersQuery))->sum('total_amount'),
+            'orders_count' => (clone $allOrdersQuery)->where('created_at', '>=', $start)->count(),
+            'online_orders_count' => (clone $onlineOrdersQuery)->where('created_at', '>=', $start)->count(),
+            'pos_orders_count' => (clone $posOrdersQuery)->where('created_at', '>=', $start)->count(),
             'products_count' => (clone $storeProducts)->count(),
             'low_stock_count' => (clone $storeProducts)->whereBetween('stock', [1, 5])->count(),
         ];
 
-        // Rincian pesanan yang menunggu aksi penjual.
-        $pendingCount = (clone $ordersQuery)->where('status', Order::STATUS_DIBAYAR)->count();
-        $processedCount = (clone $ordersQuery)->where('status', Order::STATUS_DIPROSES)->count();
+        // Rincian pesanan online yang menunggu aksi penjual (POS langsung selesai).
+        $pendingCount = (clone $onlineOrdersQuery)->where('status', Order::STATUS_DIBAYAR)->count();
+        $processedCount = (clone $onlineOrdersQuery)->where('status', Order::STATUS_DIPROSES)->count();
 
-        $recentOrders = (clone $ordersQuery)
+        // Pesanan terbaru: gabungan online + walk-in POS.
+        $recentOrders = (clone $allOrdersQuery)
             ->with(['items', 'payments', 'user'])
             ->latest()
             ->take(5)
