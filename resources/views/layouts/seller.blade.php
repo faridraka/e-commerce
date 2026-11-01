@@ -94,14 +94,10 @@
 <div class="pl-[240px]">
     <header class="fixed top-0 left-[240px] right-0 h-16 bg-surface-card border-b border-border-default z-40 px-space-lg flex items-center justify-between shadow-[0_1px_4px_rgba(25,25,25,0.04)]">
         <div class="flex items-center gap-space-lg">
-            <div class="flex items-center gap-2 font-caption text-caption text-ink-muted">
-                <span class="font-body-md text-body-md text-on-surface-variant font-medium">Portal Penjual</span>
-                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                <span class="font-body-md text-body-md font-bold text-on-surface">@yield('breadcrumb', 'Dasbor')</span>
-            </div>
-            <div class="relative w-80">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-ink-muted">search</span>
-                <input class="w-full h-10 pl-9 pr-4 bg-canvas-background border border-border-default rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container focus:bg-surface-card transition-all placeholder:text-ink-muted" placeholder="Cari pesanan, SKU, atau nama produk..." type="text">
+            <div class="relative w-80" id="seller-search-wrap">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-ink-muted pointer-events-none">search</span>
+                <input autocomplete="off" class="w-full h-10 pl-9 pr-4 bg-canvas-background border border-border-default rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container focus:bg-surface-card transition-all placeholder:text-ink-muted" id="seller-search-input" placeholder="Cari pesanan, SKU, atau nama produk..." type="text">
+                <div class="hidden absolute top-12 left-0 right-0 bg-surface-card border border-border-default rounded-xl shadow-xl overflow-hidden z-50 max-h-[380px] overflow-y-auto" id="seller-search-results"></div>
             </div>
         </div>
         <div class="flex items-center gap-space-md">
@@ -114,22 +110,6 @@
                     <span class="material-symbols-outlined text-[18px]">add</span>
                     <span class="hidden md:inline">Tambah Produk</span>
                 </a>
-                <a class="h-10 px-4 rounded-full bg-primary-container hover:bg-blue-hover text-on-primary font-body-md text-body-md font-medium transition-colors flex items-center gap-1.5 shadow-sm" href="{{ route('seller.pos') }}">
-                    <span class="material-symbols-outlined text-[18px]">shopping_cart_checkout</span>
-                    <span class="">Buka Kasir</span>
-                </a>
-            </div>
-            <div class="h-6 w-px bg-border-default mx-1">
-            </div>
-            <button class="relative p-2 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors">
-                <span class="material-symbols-outlined text-[22px]">notifications</span>
-                <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-secondary ring-2 ring-surface-card">
-                </span>
-            </button>
-            <div class="flex items-center gap-space-sm pl-1">
-                <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                    <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
-                </div>
             </div>
         </div>
     </header>
@@ -141,5 +121,60 @@
     </main>
 </div>
 @stack('scripts')
+<script>
+(function () {
+    const wrap = document.getElementById('seller-search-wrap');
+    const input = document.getElementById('seller-search-input');
+    const panel = document.getElementById('seller-search-results');
+    if (!wrap || !input || !panel) return;
+
+    const suggestUrl = "{{ route('seller.search.suggest') }}";
+    const rupiah = (n) => 'Rp ' + Math.round(n).toLocaleString('id-ID');
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    let timer = null;
+
+    function hide() { panel.classList.add('hidden'); panel.innerHTML = ''; }
+    function row(url, icon, title, sub) {
+        return '<a href="' + esc(url) + '" class="flex items-center gap-2.5 px-3 py-2 hover:bg-blue-subtle/50 transition-colors">'
+            + '<span class="material-symbols-outlined text-[20px] text-primary shrink-0">' + icon + '</span>'
+            + '<span class="min-w-0"><span class="block text-[13px] font-bold text-on-surface truncate">' + esc(title) + '</span>'
+            + '<span class="block text-[11px] text-ink-muted truncate">' + esc(sub) + '</span></span></a>';
+    }
+
+    async function search(q) {
+        if (q.trim().length < 2) { hide(); return; }
+        try {
+            const res = await fetch(suggestUrl + '?q=' + encodeURIComponent(q), { headers: { 'Accept': 'application/json' } });
+            if (!res.ok) return;
+            const data = await res.json();
+            const orders = data.orders || [];
+            const products = data.products || [];
+            if (!orders.length && !products.length) {
+                panel.innerHTML = '<p class="px-4 py-3 text-[13px] text-ink-muted">Tidak ada hasil untuk &ldquo;' + esc(q) + '&rdquo;.</p>';
+            } else {
+                let html = '';
+                if (orders.length) {
+                    html += '<p class="px-3 pt-2 pb-1 text-[11px] font-bold uppercase tracking-wider text-ink-muted">Pesanan</p>';
+                    orders.forEach(o => { html += row(o.url, 'shopping_bag', o.code, (o.label || '') + ' · ' + rupiah(o.total)); });
+                }
+                if (products.length) {
+                    html += '<p class="px-3 pt-2 pb-1 text-[11px] font-bold uppercase tracking-wider text-ink-muted">Produk</p>';
+                    products.forEach(p => { html += row(p.url, 'inventory_2', p.name, rupiah(p.price) + ' · Stok ' + p.stock); });
+                }
+                panel.innerHTML = html;
+            }
+            panel.classList.remove('hidden');
+        } catch (e) { /* abaikan, biarkan input tetap bisa dipakai */ }
+    }
+
+    input.addEventListener('input', () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => search(input.value), 250);
+    });
+    input.addEventListener('focus', () => { if (input.value.trim().length >= 2) search(input.value); });
+    input.addEventListener('keydown', (e) => { if (e.key === 'Escape') { hide(); input.blur(); } });
+    document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) hide(); });
+})();
+</script>
 </body>
 </html>

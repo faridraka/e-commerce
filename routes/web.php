@@ -92,10 +92,12 @@ use App\Http\Controllers\Seller\DocumentController as SellerDocumentController;
 use App\Http\Controllers\Seller\OrderController as SellerOrderController;
 use App\Http\Controllers\Seller\PosController;
 use App\Http\Controllers\Seller\ProductController as SellerProductController;
+use App\Http\Controllers\Seller\SearchController as SellerSearchController;
 use App\Http\Controllers\Seller\StockController as SellerStockController;
 
 Route::prefix('seller')->middleware(['auth', 'onboarding.completed', 'seller'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('seller.dashboard');
+    Route::get('search/suggest', [SellerSearchController::class, 'suggest'])->name('seller.search.suggest');
 
     // Categories
     Route::get('categories', [SellerCategoryController::class, 'index'])->name('seller.categories');
